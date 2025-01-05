@@ -29,6 +29,8 @@
 #include <wx/datetime.h>
 #include <wx/string.h>
 #include <wx/utils.h>
+#include <wx/datetime.h>
+#include <math.h>
 
 #include "model/config_vars.h"
 
@@ -74,6 +76,11 @@ extern wxString getUsrTempUnit(int unit = -1);
 extern wxString FormatDistanceAdaptive(double distance);
 extern double toUsrTemp(double cel_temp, int unit = -1);
 
+extern wxDateTime toUsrDateTime(const wxDateTime ts, const wxString format,
+                                const double lon = INFINITY - INFINITY);
+extern wxDateTime fromUsrDateTime(const wxDateTime ts, const wxString format,
+                                  const double lon = INFINITY - INFINITY);
+
 extern double toUsrDistance(double nm_distance, int unit = -1);
 extern wxString getUsrDistanceUnit(int unit = -1);
 extern double fromUsrDistance(double usr_distance, int unit, int default_val);
@@ -93,4 +100,10 @@ extern double fromDMM(wxString sdms);
 
 extern double toMagnetic(double deg_true);
 extern double toMagnetic(double deg_true, double variation);
+
+extern wxString GetDaylightString(int index);
+int getDaylightStatus(double lat, double lon, wxDateTime utcDateTime);
+extern double getDaylightEvent(double glat, double glong, int riset,
+                               double altitude, int y, int m, int d);
+
 #endif  // _NAVUTIL_BASE__
