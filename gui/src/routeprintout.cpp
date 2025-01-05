@@ -62,8 +62,9 @@
 #include <signal.h>
 #include <setjmp.h>
 #endif
-#include "routeprintout.h"
 
+#include "tcmgr.h"
+#include "routeprintout.h"
 #include "printtable.h"
 #include "model/wx28compat.h"
 #include "model/track.h"
@@ -76,6 +77,9 @@
 #define PRINT_WP_COURSE 2
 #define PRINT_WP_DISTANCE 3
 #define PRINT_WP_DESCRIPTION 4
+#define PRINT_WP_SPEED 5
+#define PRINT_WP_ETA 6
+#define PRINT_WP_TIDE 7
 
 using namespace std;
 
@@ -83,6 +87,8 @@ using namespace std;
 extern wxPrintData* g_printData;
 // Global page setup data
 extern wxPageSetupData* g_pageSetupData;
+// Global Tide and Current Manager
+extern TCMgr* ptcmgr;
 
 MyRoutePrintout::MyRoutePrintout(std::vector<bool> _toPrintOut, Route* route,
                                  const wxString& title)
@@ -101,7 +107,7 @@ MyRoutePrintout::MyRoutePrintout(std::vector<bool> _toPrintOut, Route* route,
   table << _("Leg");
 
   if (toPrintOut[PRINT_WP_NAME]) {
-    table << _("To Waypoint");
+    table << _("Destination");
   }
   if (toPrintOut[PRINT_WP_POSITION]) {
     table << _("Position");
@@ -111,6 +117,15 @@ MyRoutePrintout::MyRoutePrintout(std::vector<bool> _toPrintOut, Route* route,
   }
   if (toPrintOut[PRINT_WP_DISTANCE]) {
     table << _("Distance");
+  }
+  if (toPrintOut[PRINT_WP_SPEED]) {
+    table << _("Speed");
+  }
+  if (toPrintOut[PRINT_WP_ETA]) {
+    table << wxString::Format(_T("ETA (%s)"), myRoute->m_TimeDisplayFormat);
+  }
+  if (toPrintOut[PRINT_WP_TIDE]) {
+    table << _("Tide");
   }
   if (toPrintOut[PRINT_WP_DESCRIPTION]) {
     table << _("Description");
@@ -122,19 +137,28 @@ MyRoutePrintout::MyRoutePrintout(std::vector<bool> _toPrintOut, Route* route,
 
   // setup widths for columns
   if (toPrintOut[PRINT_WP_NAME]) {
-    table << 40;
+    table << 100;
   }
   if (toPrintOut[PRINT_WP_POSITION]) {
-    table << 40;
+    table << 60;
   }
   if (toPrintOut[PRINT_WP_COURSE]) {
-    table << 40;
+    table << 50;
   }
   if (toPrintOut[PRINT_WP_DISTANCE]) {
-    table << 80;
+    table << 60;
+  }
+  if (toPrintOut[PRINT_WP_SPEED]) {
+    table << 40;
+  }
+  if (toPrintOut[PRINT_WP_ETA]) {
+    table << 100;
+  }
+  if (toPrintOut[PRINT_WP_TIDE]) {
+    table << 120;
   }
   if (toPrintOut[PRINT_WP_DESCRIPTION]) {
-    table << 100;
+    table << 120;
   }
 
   table.StartFillData();
@@ -177,6 +201,36 @@ MyRoutePrintout::MyRoutePrintout(std::vector<bool> _toPrintOut, Route* route,
         point_distance.Printf(_T("%6.2f" + getUsrDistanceUnit()),
                               toUsrDistance(point->GetDistance()));
       table << point_distance;
+    }
+    if (toPrintOut[PRINT_WP_SPEED]) {
+      wxString point_speed = _T("---");
+      if (n > 1) {
+        if (point->GetPlannedSpeed() > 0.1) {
+          point_speed.Printf(_T("%5.1f"), toUsrSpeed(point->GetPlannedSpeed()));
+        } else {
+          point_speed.Printf(_T("%5.1f"), toUsrSpeed(myRoute->m_PlannedSpeed));
+        }
+      }
+      table << point_speed;
+    }
+    if (toPrintOut[PRINT_WP_ETA]) {
+      wxString point_eta = "---";
+      if (n > 1) {
+        point_eta = toUsrDateTime(point->GetETA(), myRoute->m_TimeDisplayFormat,
+                                  point->m_lon)
+                        .Format(DT_FORMAT_STR);
+        point_eta.Append(wxString::Format(
+            _T("\n(%s)"), GetDaylightString(getDaylightStatus(
+                              point->m_lat, point->m_lon, point->GetETA()))));
+      }
+      table << point_eta;
+    }
+    if (toPrintOut[PRINT_WP_TIDE]) {
+      wxString point_tide = "---";
+      point_tide =
+          ptcmgr->MakeTideInfo(point->m_TideStation, point->m_lat, point->m_lon,
+                               point->GetETA(), myRoute->m_TimeDisplayFormat);
+      table << point_tide;
     }
     if (toPrintOut[PRINT_WP_DESCRIPTION]) {
       table << point->GetDescription();
@@ -240,19 +294,64 @@ bool MyRoutePrintout::OnPrintPage(int page) {
 }
 
 void MyRoutePrintout::DrawPage(wxDC* dc) {
-  wxFont routePrintFont_bold(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL,
-                             wxFONTWEIGHT_BOLD);
-  dc->SetFont(routePrintFont_bold);
+  wxFont title_font(16, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL,
+                    wxFONTWEIGHT_BOLD);
+  wxFont subtitle_font(12, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL,
+                       wxFONTWEIGHT_NORMAL);
+  wxFont header_font(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL,
+                     wxFONTWEIGHT_BOLD);
+  wxFont normal_font(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL,
+                     wxFONTWEIGHT_NORMAL);
+
   wxBrush brush(wxColour(255, 255, 255), wxBRUSHSTYLE_TRANSPARENT);
   dc->SetBrush(brush);
 
-  int header_textOffsetX = 2;
-  int header_textOffsetY = 2;
-
-  dc->DrawText(myRoute->m_RouteNameString, 150, 20);
-
   int currentX = marginX;
   int currentY = marginY;
+
+  int title_width, title_height;
+  dc->SetFont(title_font);
+  dc->GetTextExtent(myRoute->m_RouteNameString, &title_width, &title_height);
+  dc->DrawText(myRoute->m_RouteNameString, currentX, currentY);
+  currentY += title_height;
+
+  wxString route = "";
+  wxString distance = wxString::Format(_T("%6.2f" + getUsrDistanceUnit()),
+                                       toUsrDistance(myRoute->m_route_length));
+  if (myRoute->m_RouteStartString.Trim().Len() > 0) {
+    route = wxString::Format("From %s", myRoute->m_RouteStartString);
+    if (myRoute->m_RouteEndString.Trim().Len() > 0) {
+      route.append(wxString::Format(" to %s", myRoute->m_RouteEndString));
+    }
+    route.append(wxString::Format(" (%s)", distance));
+  } else if (myRoute->m_RouteEndString.Trim().Len() > 0) {
+    route = wxString::Format("Destination: %s", myRoute->m_RouteEndString);
+    route.append(wxString::Format(" (%s)", distance));
+  } else {
+    route = wxString::Format("Distance: %s", distance);
+  }
+
+  currentY += 2;  // add top margin
+  int route_width, route_height;
+  dc->SetFont(subtitle_font);
+  dc->GetTextExtent(route, &route_width, &route_height);
+  dc->DrawText(route, currentX, currentY);
+  currentY += route_height;
+
+  if (myRoute->m_RouteDescription.Trim().Len() > 0) {
+    currentY += 10;  // add top margin
+    int desc_width, desc_height;
+    dc->SetFont(normal_font);
+    dc->GetTextExtent(myRoute->m_RouteDescription, &desc_width, &desc_height);
+    dc->DrawText(myRoute->m_RouteDescription, currentX, currentY);
+    currentY += desc_height;
+  }
+
+  int header_textOffsetX = 2;
+  int header_textOffsetY = 2;
+  dc->SetFont(header_font);
+
+  currentY += 20;  // add top margin
   vector<PrintCell>& header_content = table.GetHeader();
   for (size_t j = 0; j < header_content.size(); j++) {
     PrintCell& cell = header_content[j];
@@ -262,12 +361,10 @@ void MyRoutePrintout::DrawPage(wxDC* dc) {
     currentX += cell.GetWidth();
   }
 
-  wxFont routePrintFont_normal(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL,
-                               wxFONTWEIGHT_NORMAL);
-  dc->SetFont(routePrintFont_normal);
+  dc->SetFont(normal_font);
 
   vector<vector<PrintCell> >& cells = table.GetContent();
-  currentY = marginY + table.GetHeaderHeight();
+  currentY += table.GetHeaderHeight();
   int currentHeight = 0;
   for (size_t i = 0; i < cells.size(); i++) {
     vector<PrintCell>& content_row = cells[i];
@@ -350,15 +447,15 @@ bool RoutePrintSelection::Create(wxWindow* parent, wxWindowID id,
 void RoutePrintSelection::CreateControls() {
   RoutePrintSelection* itemDialog1 = this;
 
-  wxStaticBox* itemStaticBoxSizer3Static =
-      new wxStaticBox(itemDialog1, wxID_ANY, _("Elements to print..."));
+  wxStaticBox* itemStaticBoxSizer3Static = new wxStaticBox(
+      itemDialog1, wxID_ANY, _("Waypoint elements to print..."));
 
   wxStaticBoxSizer* itemBoxSizer1 =
       new wxStaticBoxSizer(itemStaticBoxSizer3Static, wxVERTICAL);
   itemDialog1->SetSizer(itemBoxSizer1);
 
   wxFlexGridSizer* fgSizer2;
-  fgSizer2 = new wxFlexGridSizer(5, 2, 0, 0);
+  fgSizer2 = new wxFlexGridSizer(0, 2, 0, 0);
 
   m_checkBoxWPName =
       new wxCheckBox(itemDialog1, wxID_ANY, _("Name"), wxDefaultPosition,
@@ -414,6 +511,36 @@ void RoutePrintSelection::CreateControls() {
                        wxDefaultPosition, wxDefaultSize);
   fgSizer2->Add(label5, 1, wxALL | wxALIGN_CENTER_VERTICAL, 5);
 
+  m_checkBoxWPSpeed =
+      new wxCheckBox(itemDialog1, wxID_ANY, _("Speed"), wxDefaultPosition,
+                     wxDefaultSize, wxALIGN_LEFT);
+  m_checkBoxWPSpeed->SetValue(true);
+  fgSizer2->Add(m_checkBoxWPSpeed, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
+  wxStaticText* label6 = new wxStaticText(itemDialog1, wxID_ANY,
+                                          _("Show planned speed to Waypoint."),
+                                          wxDefaultPosition, wxDefaultSize);
+  fgSizer2->Add(label6, 1, wxALL | wxALIGN_CENTER_VERTICAL, 5);
+
+  m_checkBoxWPETA =
+      new wxCheckBox(itemDialog1, wxID_ANY, _("ETA"), wxDefaultPosition,
+                     wxDefaultSize, wxALIGN_LEFT);
+  m_checkBoxWPETA->SetValue(true);
+  fgSizer2->Add(m_checkBoxWPETA, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
+  wxStaticText* label7 =
+      new wxStaticText(itemDialog1, wxID_ANY, _("Show Estimated Time Arrival."),
+                       wxDefaultPosition, wxDefaultSize);
+  fgSizer2->Add(label7, 1, wxALL | wxALIGN_CENTER_VERTICAL, 5);
+
+  m_checkBoxWPTide =
+      new wxCheckBox(itemDialog1, wxID_ANY, _("Tide event"), wxDefaultPosition,
+                     wxDefaultSize, wxALIGN_LEFT);
+  m_checkBoxWPTide->SetValue(true);
+  fgSizer2->Add(m_checkBoxWPTide, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
+  wxStaticText* label8 = new wxStaticText(itemDialog1, wxID_ANY,
+                                          _("Show next tide event at station."),
+                                          wxDefaultPosition, wxDefaultSize);
+  fgSizer2->Add(label8, 1, wxALL | wxALIGN_CENTER_VERTICAL, 5);
+
   itemBoxSizer1->Add(fgSizer2, 5, wxEXPAND, 5);
 
   wxBoxSizer* itemBoxSizer16 = new wxBoxSizer(wxHORIZONTAL);
@@ -456,10 +583,21 @@ void RoutePrintSelection::OnRoutepropOkClick(wxCommandEvent& event) {
   toPrintOut.push_back(m_checkBoxWPCourse->GetValue());
   toPrintOut.push_back(m_checkBoxWPDistanceToNext->GetValue());
   toPrintOut.push_back(m_checkBoxWPDescription->GetValue());
+  toPrintOut.push_back(m_checkBoxWPSpeed->GetValue());
+  toPrintOut.push_back(m_checkBoxWPETA->GetValue());
+  toPrintOut.push_back(m_checkBoxWPTide->GetValue());
 
   if (NULL == g_printData) {
     g_printData = new wxPrintData;
-    g_printData->SetOrientation(wxPORTRAIT);
+
+    // Elements to print
+    int sum = std::count(toPrintOut.begin(), toPrintOut.end(), true);
+    if (sum > 5) {
+      g_printData->SetOrientation(wxLANDSCAPE);
+    } else {
+      g_printData->SetOrientation(wxPORTRAIT);
+    }
+
     g_pageSetupData = new wxPageSetupDialogData;
   }
 
