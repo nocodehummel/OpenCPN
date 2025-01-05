@@ -341,7 +341,7 @@ void RoutePropDlgImpl::UpdatePoints() {
         eta = wxString::Format(
             "Start: %s", toUsrDateTime(m_pRoute->m_PlannedDeparture,
                                        m_tz_selection, pnode->GetData()->m_lon)
-                             .Format(ETA_FORMAT_STR)
+                             .Format(DT_FORMAT_STR)
                              .c_str());
         eta.Append(wxString::Format(
             _T(" (%s)"),
@@ -364,7 +364,7 @@ void RoutePropDlgImpl::UpdatePoints() {
       if (pnode->GetData()->GetETA().IsValid()) {
         eta = toUsrDateTime(pnode->GetData()->GetETA(), m_tz_selection,
                             pnode->GetData()->m_lon)
-                  .Format(ETA_FORMAT_STR);
+                  .Format(DT_FORMAT_STR);
         eta.Append(wxString::Format(
             _T(" (%s)"),
             GetDaylightString(getDaylightStatus(pnode->GetData()->m_lat,
@@ -388,7 +388,7 @@ void RoutePropDlgImpl::UpdatePoints() {
       // GetManualETD() returns time in UTC, always. So use it as such.
       etd = toUsrDateTime(pnode->GetData()->GetManualETD(),
                           0 /*m_tz_selection*/, pnode->GetData()->m_lon)
-                .Format(ETA_FORMAT_STR);
+                .Format(DT_FORMAT_STR);
       if (pnode->GetData()->GetManualETD().IsValid() &&
           pnode->GetData()->GetETA().IsValid() &&
           pnode->GetData()->GetManualETD() < pnode->GetData()->GetETA()) {
@@ -526,9 +526,9 @@ void RoutePropDlgImpl::SetRouteAndUpdate(Route* pR, bool only_points) {
 
     m_tz_selection = 1;  // Local PC time by default
     if (pR != m_pRoute) {
-      if (pR->m_TimeDisplayFormat == RTE_TIME_DISP_UTC)
+      if (pR->m_TimeDisplayFormat == DATE_TIME_DISP_UTC)
         m_tz_selection = 0;
-      else if (pR->m_TimeDisplayFormat == RTE_TIME_DISP_LOCAL)
+      else if (pR->m_TimeDisplayFormat == DATE_TIME_DISP_LOCAL)
         m_tz_selection = 2;
       m_pEnroutePoint = NULL;
       m_bStartNow = false;
@@ -806,8 +806,8 @@ void RoutePropDlgImpl::OnRoutepropCopyTxtClick(wxCommandEvent& event) {
             << m_pRoute->m_RouteEndString << eol << _("Total distance") << tab
             << m_tcDistance->GetValue() << eol << _("Speed (Kts)") << tab
             << m_tcPlanSpeed->GetValue() << eol
-            << _("Departure Time") + _T(" (") + _T(ETA_FORMAT_STR) + _T(")")
-            << tab << GetDepartureTS().Format(ETA_FORMAT_STR) << eol
+            << _("Departure Time") + _T(" (") + _T(DT_FORMAT_STR) + _T(")")
+            << tab << GetDepartureTS().Format(DT_FORMAT_STR) << eol
             << _("Time enroute") << tab << m_tcEnroute->GetValue() << eol
             << eol;
 
@@ -1005,13 +1005,13 @@ void RoutePropDlgImpl::SaveChanges() {
     m_pRoute->m_width = ::WidthValues[m_choiceWidth->GetSelection()];
     switch (m_tz_selection) {
       case 1:
-        m_pRoute->m_TimeDisplayFormat = RTE_TIME_DISP_PC;
+        m_pRoute->m_TimeDisplayFormat = DATE_TIME_DISP_PC;
         break;
       case 2:
-        m_pRoute->m_TimeDisplayFormat = RTE_TIME_DISP_LOCAL;
+        m_pRoute->m_TimeDisplayFormat = DATE_TIME_DISP_LOCAL;
         break;
       default:
-        m_pRoute->m_TimeDisplayFormat = RTE_TIME_DISP_UTC;
+        m_pRoute->m_TimeDisplayFormat = DATE_TIME_DISP_UTC;
     }
 
     pConfig->UpdateRoute(m_pRoute);
@@ -1190,10 +1190,10 @@ wxString RoutePropDlgImpl::MakeTideInfo(wxString stationName, double lat,
       ptcmgr->GetStationTimeOffset((IDX_entry*)ptcmgr->GetIDX_entry(stationID));
 
   tide_form.Append(
-      toUsrDateTime(dtm, m_tz_selection, lon).Format(ETA_FORMAT_STR));
+      toUsrDateTime(dtm, m_tz_selection, lon).Format(DT_FORMAT_STR));
   dtm.Add(wxTimeSpan(0, offset, 0));
   tide_form.Append(wxString::Format(_T(" (") + _("Local") + _T(": %s) @ %s"),
-                                    dtm.Format(ETA_FORMAT_STR),
+                                    dtm.Format(DT_FORMAT_STR),
                                     stationName.c_str()));
 
   return tide_form;

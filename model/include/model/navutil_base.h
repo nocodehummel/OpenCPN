@@ -32,6 +32,14 @@
 
 #include "model/config_vars.h"
 
+#define DT_FORMAT_STR "%x %H:%M"
+//"%d/%m/%Y %H:%M" //"%Y-%m-%d %H:%M"
+
+// User date time options.
+#define DATE_TIME_DISP_UTC _T("UTC")
+#define DATE_TIME_DISP_PC _T("PC")
+#define DATE_TIME_DISP_LOCAL _T("LOCAL")
+
 enum { SPEED_KTS = 0, SPEED_MPH, SPEED_KMH, SPEED_MS };
 enum { WSPEED_KTS = 0, WSPEED_MS, WSPEED_MPH, WSPEED_KMH };
 enum { DEPTH_FT = 0, DEPTH_M, DEPTH_FA };
