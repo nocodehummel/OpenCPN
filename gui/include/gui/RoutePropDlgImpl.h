@@ -120,8 +120,6 @@ private:
   wxHyperlinkCtrl* m_pEditedLink;
 
   bool IsThisRouteExtendable();
-  wxString MakeTideInfo(wxString stationName, double lat, double lon,
-                        wxDateTime utcTime);
 };
 
 #endif  // _ROUTEPROPDLGIMPL_H_

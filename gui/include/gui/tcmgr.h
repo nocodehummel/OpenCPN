@@ -30,6 +30,8 @@
 #include <map>
 #include <vector>
 
+#include <wx/datetime.h>
+
 #include "Station_Data.h"
 #include "IDX_entry.h"
 #include "TC_Error_Code.h"
@@ -119,6 +121,9 @@ public:
   int GetStationIDXbyNameType(const wxString &prefix, double xlat, double xlon,
                               char type) const;
   void ScrubCurrentDepths();
+
+  wxString MakeTideInfo(wxString stationName, double lat, double lon,
+                        wxDateTime utcTime, wxString format);
 
 private:
   void PurgeData();

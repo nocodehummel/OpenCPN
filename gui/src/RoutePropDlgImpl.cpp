@@ -948,49 +948,6 @@ bool RoutePropDlgImpl::IsThisRouteExtendable() {
   return false;
 }
 
-wxString RoutePropDlgImpl::MakeTideInfo(wxString stationName, double lat,
-                                        double lon, wxDateTime utcTime) {
-  if (stationName.Find("lind") != wxNOT_FOUND) int yyp = 4;
-
-  if (stationName.IsEmpty()) {
-    return wxEmptyString;
-  }
-  if (!utcTime.IsValid()) {
-    return _("Invalid date/time!");
-  }
-  int stationID = ptcmgr->GetStationIDXbyName(stationName, lat, lon);
-  if (stationID == 0) {
-    return _("Unknown station!");
-  }
-  time_t dtmtt = utcTime.FromUTC().GetTicks();
-  int ev = ptcmgr->GetNextBigEvent(&dtmtt, stationID);
-
-  wxDateTime dtm;
-  dtm.Set(dtmtt).MakeUTC();
-
-  wxString tide_form = wxEmptyString;
-
-  if (ev == 1) {
-    tide_form.Append(_T("LW: "));
-  } else if (ev == 2) {
-    tide_form.Append(_T("HW: "));
-  } else if (ev == 0) {
-    tide_form.Append(_("Unavailable: "));
-  }
-
-  int offset =
-      ptcmgr->GetStationTimeOffset((IDX_entry*)ptcmgr->GetIDX_entry(stationID));
-
-  tide_form.Append(
-      toUsrDateTime(dtm, m_tz_selection, lon).Format(DT_FORMAT_STR));
-  dtm.Add(wxTimeSpan(0, offset, 0));
-  tide_form.Append(wxString::Format(_T(" (") + _("Local") + _T(": %s) @ %s"),
-                                    dtm.Format(DT_FORMAT_STR),
-                                    stationName.c_str()));
-
-  return tide_form;
-}
-
 void RoutePropDlgImpl::ItemEditOnMenuSelection(wxCommandEvent& event) {
   wxString findurl = m_pEditedLink->GetURL();
   wxString findlabel = m_pEditedLink->GetLabel();

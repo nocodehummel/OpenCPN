@@ -39,6 +39,7 @@
 #include "tcmgr.h"
 #include "model/georef.h"
 #include "model/logger.h"
+#include "model/navutil_base.h"
 
 //-----------------------------------------------------------------------------------
 //    TIDELIB
@@ -1070,6 +1071,47 @@ int TCMgr::GetStationIDXbyNameType(const wxString &prefix, double xlat,
     }
   }  // end for loop
   return (jx);
+}
+
+wxString TCMgr::MakeTideInfo(wxString stationName, double lat, double lon,
+                             wxDateTime utcTime, wxString format) {
+  if (stationName.Find("lind") != wxNOT_FOUND) int yyp = 4;
+
+  if (stationName.IsEmpty()) {
+    return wxEmptyString;
+  }
+  if (!utcTime.IsValid()) {
+    return _("Invalid date/time!");
+  }
+  int stationID = GetStationIDXbyName(stationName, lat, lon);
+  if (stationID == 0) {
+    return _("Unknown station!");
+  }
+  time_t dtmtt = utcTime.FromUTC().GetTicks();
+  int ev = GetNextBigEvent(&dtmtt, stationID);
+
+  wxDateTime dtm;
+  dtm.Set(dtmtt).MakeUTC();
+
+  wxString tide_form = wxEmptyString;
+
+  if (ev == 1) {
+    tide_form.Append(_T("LW: "));
+  } else if (ev == 2) {
+    tide_form.Append(_T("HW: "));
+  } else if (ev == 0) {
+    tide_form.Append(_("Unavailable: "));
+  }
+
+  int offset = GetStationTimeOffset((IDX_entry *)GetIDX_entry(stationID));
+
+  tide_form.Append(toUsrDateTime(dtm, format, lon).Format(DT_FORMAT_STR));
+  dtm.Add(wxTimeSpan(0, offset, 0));
+  tide_form.Append(wxString::Format(_T(" (") + _("Local") + _T(": %s) @ %s"),
+                                    dtm.Format(DT_FORMAT_STR),
+                                    stationName.c_str()));
+
+  return tide_form;
 }
 
 /* $Id: tide_db_default.h 1092 2006-11-16 03:02:42Z flaterco $ */
