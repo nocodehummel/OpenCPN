@@ -236,16 +236,16 @@ MyRoutePrintout::MyRoutePrintout(std::vector<bool> _toPrintOut, Route* route,
 
     if (toPrintOut[PRINT_WP_ETA]) {
       std::wostringstream point_eta;
-      if (n > 1) {
-        int daylight =
-            getDaylightStatus(point->m_lat, point->m_lon, point->GetETA());
-        point_eta << toUsrDateTime(point->GetETA(),
-                                   myRoute->m_TimeDisplayFormat, point->m_lon)
-                         .Format(DT_FORMAT_ISO);
-        point_eta << "\n(" << GetDaylightString(daylight).wc_str() << ")";
-      } else {
-        point_eta << "---";
+      if (n == 1) {
+        point_eta << _("Start").wc_str() << ": ";
       }
+      int daylight =
+          getDaylightStatus(point->m_lat, point->m_lon, point->GetETA());
+      point_eta << toUsrDateTime(point->GetETA(), myRoute->m_TimeDisplayFormat,
+                                 point->m_lon)
+                       .Format(DT_FORMAT_ISO);
+      point_eta << "\n(" << GetDaylightString(daylight).wc_str() << ")";
+
       table << point_eta.str();
     }
     if (toPrintOut[PRINT_WP_TIDE]) {
@@ -290,8 +290,8 @@ void MyRoutePrintout::OnPreparePrinting() {
   int w, h;
   dc->GetSize(&w, &h);
 
-  // We don't know before hand what size the Print DC will be, in pixels. Varies
-  // by host. So, if the dc size is greater than 1000 pixels, we scale
+  // We don't know before hand what size the Print DC will be, in pixels.
+  // Varies by host. So, if the dc size is greater than 1000 pixels, we scale
   // accordinly.
 
   int maxX = wxMin(w, 1000);
