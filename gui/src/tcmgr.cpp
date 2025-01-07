@@ -1127,7 +1127,7 @@ std::wstring TideEvent::GetEventStr(std::wstring dt_type,
 std::wstring TideEvent::GetLocalTimeStr(const char *dt_format) {
   if (this->m_event > 0) {
     wxDateTime loc_dt = GetLocalTime();
-    return loc_dt.Format(dt_format);
+    return loc_dt.Format(dt_format).wc_str();
   } else {
     return std::wstring();
   }
