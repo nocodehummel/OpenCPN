@@ -187,7 +187,7 @@ void RoutePropDlgImpl::UpdatePoints() {
         eta = wxString::Format(
             "Start: %s", toUsrDateTime(m_pRoute->m_PlannedDeparture, dt_format,
                                        pnode->GetData()->m_lon)
-                             .Format(DT_FORMAT_STR)
+                             .Format(DT_FORMAT_LOCALE)
                              .c_str());
         eta.Append(wxString::Format(
             _T(" (%s)"),
@@ -210,7 +210,7 @@ void RoutePropDlgImpl::UpdatePoints() {
       if (pnode->GetData()->GetETA().IsValid()) {
         eta = toUsrDateTime(pnode->GetData()->GetETA(), dt_format,
                             pnode->GetData()->m_lon)
-                  .Format(DT_FORMAT_STR);
+                  .Format(DT_FORMAT_LOCALE);
         eta.Append(wxString::Format(
             _T(" (%s)"),
             GetDaylightString(getDaylightStatus(pnode->GetData()->m_lat,
@@ -234,7 +234,7 @@ void RoutePropDlgImpl::UpdatePoints() {
       // GetManualETD() returns time in UTC, always. So use it as such.
       etd = toUsrDateTime(pnode->GetData()->GetManualETD(), DATE_TIME_DISP_UTC,
                           pnode->GetData()->m_lon)
-                .Format(DT_FORMAT_STR);
+                .Format(DT_FORMAT_LOCALE);
       if (pnode->GetData()->GetManualETD().IsValid() &&
           pnode->GetData()->GetETA().IsValid() &&
           pnode->GetData()->GetManualETD() < pnode->GetData()->GetETA()) {
@@ -277,8 +277,19 @@ void RoutePropDlgImpl::UpdatePoints() {
     data.push_back(schar + eta + schar);                                 // ETA
     data.push_back(
         wxVariant(wxString::FromDouble(toUsrSpeed(speed))));  // Speed
-    wxString tide_info = ptcmgr->MakeTideInfo(tide_station, lat, lon, eta_dt,
-                                              dt_format);  // Next Tide event
+
+    wxString tide_info;
+    if (tide_station.IsEmpty()) {
+      tide_info = wxEmptyString;
+    } else {
+      TideEvent tide_event =
+          ptcmgr->GetTideEvent(tide_station.wc_str(), eta_dt, lat, lon);
+      tide_info = tide_event.GetEventStr(dt_format.wc_str(), DT_FORMAT_LOCALE);
+      tide_info.Append(wxString::Format(
+          " (%s)", tide_event.GetLocalTimeStr(DT_FORMAT_LOCALE)));
+      tide_info.Append(wxString::Format(" @%s", tide_station.c_str()));
+    }
+
     data.push_back(wxVariant(tide_info));
     data.push_back(wxVariant(desc));  // Description
     data.push_back(wxVariant(crs));
@@ -607,8 +618,8 @@ void RoutePropDlgImpl::OnRoutepropCopyTxtClick(wxCommandEvent& event) {
             << m_pRoute->m_RouteEndString << eol << _("Total distance") << tab
             << m_tcDistance->GetValue() << eol << _("Speed (Kts)") << tab
             << m_tcPlanSpeed->GetValue() << eol
-            << _("Departure Time") + _T(" (") + _T(DT_FORMAT_STR) + _T(")")
-            << tab << GetDepartureTS().Format(DT_FORMAT_STR) << eol
+            << _("Departure Time") + _T(" (") + _T(DT_FORMAT_LOCALE) + _T(")")
+            << tab << GetDepartureTS().Format(DT_FORMAT_LOCALE) << eol
             << _("Time enroute") << tab << m_tcEnroute->GetValue() << eol
             << eol;
 
@@ -1116,7 +1127,8 @@ void RoutePropDlgImpl::OnHyperlinkClick(wxHyperlinkEvent& event) {
   //    wxLaunchDefaultBrowser with verb "open" Workaround is to probe the
   //    registry to get the default browser, and open directly
   //
-  //    But, we will do this only if the URL contains the anchor point character
+  //    But, we will do this only if the URL contains the anchor point
+  //    character
   //    '#' What a hack......
 
 #ifdef __WXMSW__

@@ -29,6 +29,7 @@
 
 #include <map>
 #include <vector>
+#include <string>
 
 #include <wx/datetime.h>
 
@@ -81,6 +82,35 @@ typedef struct {
   void *next;
 } mru_entry;
 
+// Define tide event.
+class TideEvent {
+private:
+  int m_station_id;
+  double m_lat;
+  double m_lon;
+
+  // type of tide
+  int m_event;
+  wxDateTime m_ref_dt;
+  wxDateTime m_event_dt;
+
+  std::wstring GetEventStr();
+  wxDateTime GetLocalTime();
+
+public:
+  int m_offset;
+  std::wstring m_station_name;
+
+  TideEvent();
+  TideEvent(int station_id, wxDateTime ref_dt, double lat, double lon);
+
+  std::wstring GetEventStr(std::wstring dt_type, const char *dt_format);
+  std::wstring GetLocalTimeStr(const char *dt_format);
+  std::string GetLocalOffsetStr(std::wstring dt_type);
+
+  void SetStationName(const std::wstring &station_name);
+};
+
 //----------------------------------------------------------------------------
 //   TCMgr
 //----------------------------------------------------------------------------
@@ -122,8 +152,8 @@ public:
                               char type) const;
   void ScrubCurrentDepths();
 
-  wxString MakeTideInfo(wxString stationName, double lat, double lon,
-                        wxDateTime utcTime, wxString format);
+  TideEvent GetTideEvent(std::wstring station_name, wxDateTime ref_dt,
+                         double xlat, double xlon);
 
 private:
   void PurgeData();

@@ -34,8 +34,10 @@
 
 #include "model/config_vars.h"
 
-#define DT_FORMAT_STR "%x %H:%M"
-//"%d/%m/%Y %H:%M" //"%Y-%m-%d %H:%M"
+// Locale specific format e.g. "%d/%m/%Y %H:%M"
+#define DT_FORMAT_LOCALE "%x %H:%M"
+// ISO 8601 standard format
+#define DT_FORMAT_ISO "%Y-%m-%d %H:%M"
 
 // User date time options.
 #define DATE_TIME_DISP_UTC _T("UTC")

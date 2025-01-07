@@ -250,11 +250,18 @@ MyRoutePrintout::MyRoutePrintout(std::vector<bool> _toPrintOut, Route* route,
     }
     if (toPrintOut[PRINT_WP_TIDE]) {
       std::wostringstream point_tide;
-      point_tide << ptcmgr
-                        ->MakeTideInfo(point->m_TideStation, point->m_lat,
-                                       point->m_lon, point->GetETA(),
-                                       myRoute->m_TimeDisplayFormat)
-                        .wc_str();
+
+      if (point->m_TideStation.Len() > 0) {
+        TideEvent tide_event =
+            ptcmgr->GetTideEvent(point->m_TideStation.wc_str(), point->GetETA(),
+                                 point->m_lat, point->m_lon);
+        point_tide << tide_event.GetEventStr(
+                          myRoute->m_TimeDisplayFormat.wc_str(), DT_FORMAT_ISO)
+                   << "\n"
+                   << tide_event.GetLocalOffsetStr(
+                          myRoute->m_TimeDisplayFormat.wc_str())
+                   << " @" << tide_event.m_station_name;
+      }
       table << point_tide.str();
     }
     if (toPrintOut[PRINT_WP_DESCRIPTION]) {
