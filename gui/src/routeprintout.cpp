@@ -381,7 +381,8 @@ void MyRoutePrintout::DrawPage(wxDC* dc) {
     currentY += subtitle_height;
   }
 
-  if (myRoute->m_RouteDescription.Trim().Len() > 0) {
+  // Route description on page 1.
+  if (pageToPrint == 1 && myRoute->m_RouteDescription.Trim().Len() > 0) {
     currentY += 10;  // add top margin
     int desc_width, desc_height;
     dc->SetFont(normal_font);
