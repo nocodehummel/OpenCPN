@@ -287,22 +287,23 @@ void MyRoutePrintout::OnPreparePrinting() {
   dc->SetFont(routePrintFont);
 
   // Get the size of the DC in pixels
-  int w, h;
-  dc->GetSize(&w, &h);
+  dc->GetSize(&pageSizeX, &pageSizeY);
 
   // We don't know before hand what size the Print DC will be, in pixels.
   // Varies by host. So, if the dc size is greater than 1000 pixels, we scale
   // accordinly.
 
-  int maxX = wxMin(w, 1000);
-  int maxY = wxMin(h, 1000);
+  int maxX = wxMin(pageSizeX, 1000);
+  int maxY = wxMin(pageSizeY, 1000);
 
   // Calculate a suitable scaling factor
-  double scaleX = (double)(w / maxX);
-  double scaleY = (double)(h / maxY);
+  double scaleX = (double)(pageSizeX / maxX);
+  double scaleY = (double)(pageSizeY / maxY);
 
   // Use x or y scaling factor, whichever fits on the DC
   double actualScale = wxMin(scaleX, scaleY);
+  pageSizeX = (pageSizeX / actualScale) - (2 * marginX);
+  pageSizeY = (pageSizeY / actualScale) - (2 * marginY);
 
   // Set the scale and origin
   dc->SetUserScale(actualScale, actualScale);
@@ -384,11 +385,11 @@ void MyRoutePrintout::DrawPage(wxDC* dc) {
   // Route description on page 1.
   if (pageToPrint == 1 && myRoute->m_RouteDescription.Trim().Len() > 0) {
     currentY += 10;  // add top margin
-    int desc_width, desc_height;
     dc->SetFont(normal_font);
-    dc->GetTextExtent(myRoute->m_RouteDescription, &desc_width, &desc_height);
-    dc->DrawText(myRoute->m_RouteDescription, currentX, currentY);
-    currentY += desc_height;
+    PrintCell cell_desc;
+    cell_desc.Init(myRoute->m_RouteDescription, dc, pageSizeX, 0);
+    dc->DrawText(cell_desc.GetText(), currentX, currentY);
+    currentY += cell_desc.GetHeight();
   }
 
   int header_textOffsetX = 2;

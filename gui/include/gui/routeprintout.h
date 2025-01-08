@@ -63,6 +63,8 @@ protected:
   static const int pN = 5;       // number of fields sofar
   int pageToPrint;
   int numberOfPages;
+  int pageSizeX;
+  int pageSizeY;
   int marginX;
   int marginY;
   int textOffsetX;
