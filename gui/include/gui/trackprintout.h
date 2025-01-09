@@ -1,7 +1,7 @@
 /***************************************************************************
  *
  * Project:  OpenCPN
- * Purpose:  OpenCP Track printout
+ * Purpose:  OpenCPN Track printout
  * Author:   Pavel Saviankou, Sean D'Epagnier
  *
  ***************************************************************************
@@ -42,11 +42,11 @@
 #include "printtable.h"
 #include "ocpn_frame.h"
 
-class MyTrackPrintout : public MyPrintout {
+class TrackPrintout : public OpenCPNPrint {
 public:
-  MyTrackPrintout(std::vector<bool> _toPrintOut, Track* track,
-                  OCPNTrackListCtrl* lcPoints,
-                  const wxString& title = _T( "My Track printout" ));
+  TrackPrintout(std::vector<bool> _toPrintOut, Track* track,
+                OCPNTrackListCtrl* lcPoints,
+                const wxString& title = _T( "My Track printout" ));
   virtual bool OnPrintPage(int page);
   void DrawPage(wxDC* dc);
   virtual void OnPreparePrinting();

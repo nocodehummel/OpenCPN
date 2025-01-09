@@ -1,7 +1,7 @@
 /***************************************************************************
  *
  * Project:  OpenCPN
- * Purpose:  OpenCP Route printout
+ * Purpose:  OpenCPN Route printout
  * Author:   Pavel Saviankou
  *
  ***************************************************************************
@@ -41,10 +41,10 @@
 #include "printtable.h"
 #include "ocpn_frame.h"
 
-class MyRoutePrintout : public MyPrintout {
+class RoutePrintout : public OpenCPNPrint {
 public:
-  MyRoutePrintout(std::vector<bool> _toPrintOut, Route* route,
-                  const wxString& title = _T( "My Route printout" ));
+  RoutePrintout(std::vector<bool> _toPrintOut, Route* route,
+                const wxString& title = _T( "My Route printout" ));
   virtual bool OnPrintPage(int page);
   void DrawPage(wxDC* dc);
   virtual void OnPreparePrinting();

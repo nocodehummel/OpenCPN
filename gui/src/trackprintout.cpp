@@ -67,10 +67,9 @@ extern wxPrintData* g_printData;
 // Global page setup data
 extern wxPageSetupData* g_pageSetupData;
 
-MyTrackPrintout::MyTrackPrintout(std::vector<bool> _toPrintOut, Track* track,
-                                 OCPNTrackListCtrl* lcPoints,
-                                 const wxString& title)
-    : MyPrintout(title), myTrack(track), toPrintOut(_toPrintOut) {
+TrackPrintout::TrackPrintout(std::vector<bool> _toPrintOut, Track* track,
+                             OCPNTrackListCtrl* lcPoints, const wxString& title)
+    : OpenCPNPrint(title), myTrack(track), toPrintOut(_toPrintOut) {
   // Let's have at least some device units margin
   marginX = 100;
   marginY = 100;
@@ -131,15 +130,15 @@ MyTrackPrintout::MyTrackPrintout(std::vector<bool> _toPrintOut, Track* track,
   }
 }
 
-void MyTrackPrintout::GetPageInfo(int* minPage, int* maxPage, int* selPageFrom,
-                                  int* selPageTo) {
+void TrackPrintout::GetPageInfo(int* minPage, int* maxPage, int* selPageFrom,
+                                int* selPageTo) {
   *minPage = 1;
   *maxPage = numberOfPages;
   *selPageFrom = 1;
   *selPageTo = numberOfPages;
 }
 
-void MyTrackPrintout::OnPreparePrinting() {
+void TrackPrintout::OnPreparePrinting() {
   pageToPrint = 1;
   wxDC* dc = GetDC();
   wxFont trackPrintFont(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL,
@@ -172,7 +171,7 @@ void MyTrackPrintout::OnPreparePrinting() {
   numberOfPages = table.GetNumberPages();
 }
 
-bool MyTrackPrintout::OnPrintPage(int page) {
+bool TrackPrintout::OnPrintPage(int page) {
   wxDC* dc = GetDC();
   if (dc) {
     if (page <= numberOfPages) {
@@ -185,7 +184,7 @@ bool MyTrackPrintout::OnPrintPage(int page) {
     return false;
 }
 
-void MyTrackPrintout::DrawPage(wxDC* dc) {
+void TrackPrintout::DrawPage(wxDC* dc) {
   wxFont trackPrintFont_bold(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL,
                              wxFONTWEIGHT_BOLD);
   dc->SetFont(trackPrintFont_bold);
@@ -395,14 +394,14 @@ void TrackPrintSelection::OnTrackpropOkClick(wxCommandEvent& event) {
     g_pageSetupData = new wxPageSetupDialogData;
   }
 
-  MyTrackPrintout* mytrackprintout1 =
-      new MyTrackPrintout(toPrintOut, track, m_lcPoints, _("Track Print"));
+  TrackPrintout* trackprintout =
+      new TrackPrintout(toPrintOut, track, m_lcPoints, _("Track Print"));
 
   wxPrintDialogData printDialogData(*g_printData);
   printDialogData.EnablePageNumbers(true);
 
   wxPrinter printer(&printDialogData);
-  if (!printer.Print(this, mytrackprintout1, true)) {
+  if (!printer.Print(this, trackprintout, true)) {
     if (wxPrinter::GetLastError() == wxPRINTER_ERROR) {
       OCPNMessageBox(NULL,
                      _("There was a problem printing.\nPerhaps your current "

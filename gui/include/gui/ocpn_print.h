@@ -31,9 +31,9 @@
 #include <wx/print.h>
 #include <wx/string.h>
 
-class MyPrintout : public wxPrintout {
+class OpenCPNPrint : public wxPrintout {
 public:
-  MyPrintout(const wxChar *title = _T("My printout")) : wxPrintout(title) {}
+  OpenCPNPrint(const wxChar *title = _T("OpenCPN print")) : wxPrintout(title) {}
   virtual bool OnPrintPage(int page);
   virtual bool HasPage(int page);
   virtual bool OnBeginDocument(int startPage, int endPage);

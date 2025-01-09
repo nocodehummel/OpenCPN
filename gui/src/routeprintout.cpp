@@ -92,9 +92,9 @@ extern wxPageSetupData* g_pageSetupData;
 // Global Tide and Current Manager
 extern TCMgr* ptcmgr;
 
-MyRoutePrintout::MyRoutePrintout(std::vector<bool> _toPrintOut, Route* route,
-                                 const wxString& title)
-    : MyPrintout(title), myRoute(route), toPrintOut(_toPrintOut) {
+RoutePrintout::RoutePrintout(std::vector<bool> _toPrintOut, Route* route,
+                             const wxString& title)
+    : OpenCPNPrint(title), myRoute(route), toPrintOut(_toPrintOut) {
   // Let's have at least some device units margin
   marginX = 100;
   marginY = 100;
@@ -271,15 +271,15 @@ MyRoutePrintout::MyRoutePrintout(std::vector<bool> _toPrintOut, Route* route,
   }
 }
 
-void MyRoutePrintout::GetPageInfo(int* minPage, int* maxPage, int* selPageFrom,
-                                  int* selPageTo) {
+void RoutePrintout::GetPageInfo(int* minPage, int* maxPage, int* selPageFrom,
+                                int* selPageTo) {
   *minPage = 1;
   *maxPage = numberOfPages;
   *selPageFrom = 1;
   *selPageTo = numberOfPages;
 }
 
-void MyRoutePrintout::OnPreparePrinting() {
+void RoutePrintout::OnPreparePrinting() {
   pageToPrint = 1;
   wxDC* dc = GetDC();
   wxFont routePrintFont(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL,
@@ -313,7 +313,7 @@ void MyRoutePrintout::OnPreparePrinting() {
   numberOfPages = table.GetNumberPages();
 }
 
-bool MyRoutePrintout::OnPrintPage(int page) {
+bool RoutePrintout::OnPrintPage(int page) {
   wxDC* dc = GetDC();
   if (dc) {
     if (page <= numberOfPages) {
@@ -326,7 +326,7 @@ bool MyRoutePrintout::OnPrintPage(int page) {
     return false;
 }
 
-void MyRoutePrintout::DrawPage(wxDC* dc) {
+void RoutePrintout::DrawPage(wxDC* dc) {
   wxFont title_font(16, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL,
                     wxFONTWEIGHT_BOLD);
   wxFont subtitle_font(12, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL,
@@ -646,14 +646,14 @@ void RoutePrintSelection::OnRoutepropOkClick(wxCommandEvent& event) {
     g_pageSetupData = new wxPageSetupDialogData;
   }
 
-  MyRoutePrintout* myrouteprintout1 =
-      new MyRoutePrintout(toPrintOut, route, _("Route Print"));
+  RoutePrintout* routeprintout =
+      new RoutePrintout(toPrintOut, route, _("Route Print"));
 
   wxPrintDialogData printDialogData(*g_printData);
   printDialogData.EnablePageNumbers(true);
 
   wxPrinter printer(&printDialogData);
-  if (!printer.Print(this, myrouteprintout1, true)) {
+  if (!printer.Print(this, routeprintout, true)) {
     if (wxPrinter::GetLastError() == wxPRINTER_ERROR) {
       OCPNMessageBox(NULL,
                      _("There was a problem printing.\nPerhaps your current "

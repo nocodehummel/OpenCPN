@@ -35,7 +35,7 @@ extern MyFrame* gFrame;
 class ChartCanvas;
 ChartCanvas* GetFocusCanvas();
 
-bool MyPrintout::OnPrintPage(int page) {
+bool OpenCPNPrint::OnPrintPage(int page) {
   wxDC* dc = GetDC();
   if (dc) {
     if (page == 1) DrawPageOne(dc);
@@ -45,23 +45,23 @@ bool MyPrintout::OnPrintPage(int page) {
     return false;
 }
 
-bool MyPrintout::OnBeginDocument(int startPage, int endPage) {
+bool OpenCPNPrint::OnBeginDocument(int startPage, int endPage) {
   if (!wxPrintout::OnBeginDocument(startPage, endPage)) return false;
 
   return true;
 }
 
-void MyPrintout::GetPageInfo(int* minPage, int* maxPage, int* selPageFrom,
-                             int* selPageTo) {
+void OpenCPNPrint::GetPageInfo(int* minPage, int* maxPage, int* selPageFrom,
+                               int* selPageTo) {
   *minPage = 1;
   *maxPage = 1;
   *selPageFrom = 1;
   *selPageTo = 1;
 }
 
-bool MyPrintout::HasPage(int pageNum) { return (pageNum == 1); }
+bool OpenCPNPrint::HasPage(int pageNum) { return (pageNum == 1); }
 
-void MyPrintout::DrawPageOne(wxDC* dc) {
+void OpenCPNPrint::DrawPageOne(wxDC* dc) {
   // Get the Size of the Chart Canvas
   int sx, sy;
   gFrame->GetFocusCanvas()->GetClientSize(&sx, &sy);  // of the canvas
@@ -122,7 +122,7 @@ void MyPrintout::DrawPageOne(wxDC* dc) {
   }
 }
 
-void MyPrintout::GenerateGLbmp() {
+void OpenCPNPrint::GenerateGLbmp() {
   if (g_bopengl) {
 #ifdef ocpnUSE_GL
     int gsx = gFrame->GetFocusCanvas()->GetglCanvas()->GetSize().x;

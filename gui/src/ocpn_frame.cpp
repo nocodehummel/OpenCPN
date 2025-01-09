@@ -6471,7 +6471,7 @@ void MyFrame::DoPrint(void) {
 
   wxPrinter printer(&printDialogData);
 
-  MyPrintout printout(wxT("Chart Print"));
+  OpenCPNPrint printout(wxT("Chart Print"));
 
   //  In OperGL mode, make the bitmap capture of the screen before the print
   //  method starts as to be sure the "Abort..." dialog does not appear on
@@ -6493,8 +6493,8 @@ void MyFrame::DoPrint(void) {
   // Pass two printout objects: for preview, and possible printing.
   /*
    wxPrintDialogData printDialogData(* g_printData);
-   wxPrintPreview *preview = new wxPrintPreview(new MyPrintout, new MyPrintout,
-   & printDialogData); if (!preview->Ok())
+   wxPrintPreview *preview = new wxPrintPreview(new OpenCPNPrint, new
+   OpenCPNPrint, & printDialogData); if (!preview->Ok())
    {
    delete preview;
    OCPNMessageBox(_T("There was a problem previewing.\nPerhaps your current
