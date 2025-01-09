@@ -48,4 +48,17 @@ private:
   wxBitmap m_GLbmp;
 };
 
+/*!
+ * Print selection dialog base.
+ */
+class PrintSelectionDialog : public wxDialog {
+public:
+  // Constructors
+  PrintSelectionDialog(wxWindow *parent, wxWindowID id, const wxString &caption,
+                       const wxPoint &pos, const wxSize &size, long style);
+
+  // Destructor
+  virtual ~PrintSelectionDialog();
+};
+
 #endif  //  _OCPN_PRINT_H__

@@ -239,48 +239,23 @@ EVT_BUTTON(ID_TRACKPRINT_SELECTION_CANCEL,
            TrackPrintSelection::OnTrackpropCancelClick)
 EVT_BUTTON(ID_TRACKPRINT_SELECTION_OK, TrackPrintSelection::OnTrackpropOkClick)
 END_EVENT_TABLE()
-TrackPrintSelection::TrackPrintSelection() {}
 
 TrackPrintSelection::TrackPrintSelection(wxWindow* parent, Track* _track,
                                          OCPNTrackListCtrl* lcPoints,
                                          wxWindowID id, const wxString& caption,
                                          const wxPoint& pos, const wxSize& size,
-                                         long style) {
-  track = _track;
+                                         long style)
+    : PrintSelectionDialog(parent, id, caption, pos, size, style) {
+  m_track = _track;
   m_lcPoints = lcPoints;
 
-  long wstyle = style;
-
-  Create(parent, id, caption, pos, size, wstyle);
-  Centre();
-}
-
-TrackPrintSelection::~TrackPrintSelection() {}
-
-/*!
- * TrackProp creator
- */
-
-bool TrackPrintSelection::Create(wxWindow* parent, wxWindowID id,
-                                 const wxString& caption, const wxPoint& pos,
-                                 const wxSize& size, long style) {
-  SetExtraStyle(GetExtraStyle() | wxWS_EX_BLOCK_EVENTS);
-
-#ifdef __WXOSX__
-  style |= wxSTAY_ON_TOP;
-#endif
-
-  wxDialog::Create(parent, id, _("Print Track Selection"), pos, size, style);
-
   CreateControls();
-
-  return TRUE;
+  Centre();
 }
 
 /*!
  * Control creation for TrackProp
  */
-
 void TrackPrintSelection::CreateControls() {
   TrackPrintSelection* itemDialog1 = this;
   wxStaticBox* itemStaticBoxSizer3Static =
@@ -395,7 +370,7 @@ void TrackPrintSelection::OnTrackpropOkClick(wxCommandEvent& event) {
   }
 
   TrackPrintout* trackprintout =
-      new TrackPrintout(toPrintOut, track, m_lcPoints, _("Track Print"));
+      new TrackPrintout(toPrintOut, m_track, m_lcPoints, _("Track Print"));
 
   wxPrintDialogData printDialogData(*g_printData);
   printDialogData.EnablePageNumbers(true);

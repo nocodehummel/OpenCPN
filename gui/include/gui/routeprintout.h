@@ -39,6 +39,7 @@
 #include "model/ocpn_types.h"
 #include "navutil.h"
 #include "printtable.h"
+#include "ocpn_print.h"
 #include "ocpn_frame.h"
 
 class RoutePrintout : public OpenCPNPrint {
@@ -84,12 +85,11 @@ protected:
 #define ID_ROUTEPRINT_SELECTION_OK 9001
 #define ID_ROUTEPRINT_SELECTION_CANCEL 9002
 
-class RoutePrintSelection : public wxDialog {
+class RoutePrintSelection : public PrintSelectionDialog {
   DECLARE_EVENT_TABLE()
 
 public:
-  // Constructors
-  RoutePrintSelection();
+  // Constructor
   RoutePrintSelection(
       wxWindow* parent, Route* route,
       wxWindowID id = SYMBOL_ROUTEPRINT_SELECTION_IDNAME,
@@ -97,15 +97,9 @@ public:
       const wxPoint& pos = SYMBOL_ROUTEPRINT_SELECTION_POSITION,
       const wxSize& size = SYMBOL_ROUTEPRINT_SELECTION_SIZE,
       long style = SYMBOL_ROUTEPRINT_SELECTION_STYLE);
-  ~RoutePrintSelection();
 
-  // Creation
-  bool Create(wxWindow* parent,
-              wxWindowID id = SYMBOL_ROUTEPRINT_SELECTION_IDNAME,
-              const wxString& caption = SYMBOL_ROUTEPRINT_SELECTION_TITLE,
-              const wxPoint& pos = SYMBOL_ROUTEPRINT_SELECTION_POSITION,
-              const wxSize& size = SYMBOL_ROUTEPRINT_SELECTION_SIZE,
-              long style = SYMBOL_ROUTEPRINT_SELECTION_STYLE);
+  // Destructor
+  ~RoutePrintSelection();
 
   void CreateControls();
 
@@ -129,7 +123,7 @@ public:
   wxCheckBox* m_checkBoxWPETA;
   wxCheckBox* m_checkBoxWPTide;
 
-  Route* route;
+  Route* m_route;
 };
 
 #endif

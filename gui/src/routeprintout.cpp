@@ -48,8 +48,6 @@
 #include <wx/brush.h>
 #include <wx/colour.h>
 
-#include <wx/dialog.h>
-
 #include "navutil.h"
 #include "dychart.h"
 
@@ -448,47 +446,22 @@ END_EVENT_TABLE()
 /*!
  * RouteProp constructors
  */
-
-RoutePrintSelection::RoutePrintSelection() {}
-
-RoutePrintSelection::RoutePrintSelection(wxWindow* parent, Route* _route,
+RoutePrintSelection::RoutePrintSelection(wxWindow* parent, Route* route,
                                          wxWindowID id, const wxString& caption,
                                          const wxPoint& pos, const wxSize& size,
-                                         long style) {
-  route = _route;
+                                         long style)
+    : PrintSelectionDialog(parent, id, caption, pos, size, style) {
+  m_route = route;
 
-  long wstyle = style;
-
-  Create(parent, id, caption, pos, size, wstyle);
+  CreateControls();
   Centre();
 }
 
 RoutePrintSelection::~RoutePrintSelection() {}
 
 /*!
- * RouteProp creator
- */
-
-bool RoutePrintSelection::Create(wxWindow* parent, wxWindowID id,
-                                 const wxString& caption, const wxPoint& pos,
-                                 const wxSize& size, long style) {
-  SetExtraStyle(GetExtraStyle() | wxWS_EX_BLOCK_EVENTS);
-
-#ifdef __WXOSX__
-  style |= wxSTAY_ON_TOP;
-#endif
-
-  wxDialog::Create(parent, id, _("Print Route Selection"), pos, size, style);
-
-  CreateControls();
-
-  return TRUE;
-}
-
-/*!
  * Control creation for RouteProp
  */
-
 void RoutePrintSelection::CreateControls() {
   RoutePrintSelection* itemDialog1 = this;
 
@@ -647,7 +620,7 @@ void RoutePrintSelection::OnRoutepropOkClick(wxCommandEvent& event) {
   }
 
   RoutePrintout* routeprintout =
-      new RoutePrintout(toPrintOut, route, _("Route Print"));
+      new RoutePrintout(toPrintOut, m_route, _("Route Print"));
 
   wxPrintDialogData printDialogData(*g_printData);
   printDialogData.EnablePageNumbers(true);

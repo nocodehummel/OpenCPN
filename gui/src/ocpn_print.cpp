@@ -24,6 +24,8 @@
  **************************************************************************/
 #include "config.h"
 
+#include <wx/progdlg.h>
+
 #include "chcanv.h"
 #include "glChartCanvas.h"
 #include "ocpn_frame.h"
@@ -149,3 +151,22 @@ void OpenCPNPrint::GenerateGLbmp() {
 #endif
   }
 }
+
+/*!
+ * Print selection dialog base class implementation.
+ */
+PrintSelectionDialog::PrintSelectionDialog(wxWindow* parent, wxWindowID id,
+                                           const wxString& caption,
+                                           const wxPoint& pos,
+                                           const wxSize& size, long style) {
+  long wstyle = style;
+  SetExtraStyle(GetExtraStyle() | wxWS_EX_BLOCK_EVENTS);
+
+#ifdef __WXOSX__
+  style |= wxSTAY_ON_TOP;
+#endif
+
+  Create(parent, id, caption, pos, size, wstyle);
+}
+
+PrintSelectionDialog::~PrintSelectionDialog() {}

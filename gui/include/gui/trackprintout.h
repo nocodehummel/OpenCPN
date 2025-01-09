@@ -40,6 +40,7 @@
 #include "navutil.h"
 #include "TrackPropDlg.h"
 #include "printtable.h"
+#include "ocpn_print.h"
 #include "ocpn_frame.h"
 
 class TrackPrintout : public OpenCPNPrint {
@@ -83,12 +84,11 @@ protected:
 #define ID_TRACKPRINT_SELECTION_OK 9001
 #define ID_TRACKPRINT_SELECTION_CANCEL 9002
 
-class TrackPrintSelection : public wxDialog {
+class TrackPrintSelection : public PrintSelectionDialog {
   DECLARE_EVENT_TABLE()
 
 public:
-  // Constructors
-  TrackPrintSelection();
+  // Constructor
   TrackPrintSelection(
       wxWindow* parent, Track* track, OCPNTrackListCtrl* lcPoints,
       wxWindowID id = SYMBOL_TRACKPRINT_SELECTION_IDNAME,
@@ -96,15 +96,6 @@ public:
       const wxPoint& pos = SYMBOL_TRACKPRINT_SELECTION_POSITION,
       const wxSize& size = SYMBOL_TRACKPRINT_SELECTION_SIZE,
       long style = SYMBOL_TRACKPRINT_SELECTION_STYLE);
-  ~TrackPrintSelection();
-
-  // Creation
-  bool Create(wxWindow* parent,
-              wxWindowID id = SYMBOL_TRACKPRINT_SELECTION_IDNAME,
-              const wxString& caption = SYMBOL_TRACKPRINT_SELECTION_TITLE,
-              const wxPoint& pos = SYMBOL_TRACKPRINT_SELECTION_POSITION,
-              const wxSize& size = SYMBOL_TRACKPRINT_SELECTION_SIZE,
-              long style = SYMBOL_TRACKPRINT_SELECTION_STYLE);
 
   void CreateControls();
   void SetColorScheme(ColorScheme cs);
@@ -124,7 +115,7 @@ public:
   wxCheckBox* m_checkBoxTime;
   wxCheckBox* m_checkBoxSpeed;
 
-  Track* track;
+  Track* m_track;
   OCPNTrackListCtrl* m_lcPoints;
 };
 
