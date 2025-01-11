@@ -878,10 +878,7 @@ void RoutePropDlgImpl::SplitOnButtonClick(wxCommandEvent& event) {
 void RoutePropDlgImpl::PrintOnButtonClick(wxCommandEvent& event) {
   RoutePrintSelection* dlg = new RoutePrintSelection(this, m_pRoute);
   DimeControl(dlg);
-  dlg->ShowWindowModalThenDo([this, dlg](int retcode) {
-    if (retcode == wxID_OK) {
-    }
-  });
+  dlg->ShowModal();
 }
 
 void RoutePropDlgImpl::ExtendOnButtonClick(wxCommandEvent& event) {
