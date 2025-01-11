@@ -232,113 +232,32 @@ void TrackPrintout::DrawPage(wxDC* dc) {
   }
 }
 
-// ---------- TrackPrintSelection dialof implementation
-
-BEGIN_EVENT_TABLE(TrackPrintSelection, wxDialog)
-EVT_BUTTON(ID_TRACKPRINT_SELECTION_CANCEL,
-           TrackPrintSelection::OnTrackpropCancelClick)
-EVT_BUTTON(ID_TRACKPRINT_SELECTION_OK, TrackPrintSelection::OnTrackpropOkClick)
-END_EVENT_TABLE()
-
+/*!
+ * Track print selection dialog implementation.
+ */
 TrackPrintSelection::TrackPrintSelection(wxWindow* parent, Track* _track,
                                          OCPNTrackListCtrl* lcPoints,
-                                         wxWindowID id, const wxString& caption,
-                                         const wxPoint& pos, const wxSize& size,
-                                         long style)
-    : PrintSelectionDialog(parent, id, caption, pos, size, style) {
+                                         const wxString& caption)
+    : PrintSelectionDialog(parent, caption) {
   m_track = _track;
   m_lcPoints = lcPoints;
 
-  CreateControls();
-  Centre();
-}
-
-/*!
- * Control creation for TrackProp
- */
-void TrackPrintSelection::CreateControls() {
-  TrackPrintSelection* itemDialog1 = this;
-  wxStaticBox* itemStaticBoxSizer3Static =
-      new wxStaticBox(itemDialog1, wxID_ANY, _("Elements to print..."));
-  wxStaticBoxSizer* itemBoxSizer1 =
-      new wxStaticBoxSizer(itemStaticBoxSizer3Static, wxVERTICAL);
-  itemDialog1->SetSizer(itemBoxSizer1);
-
-  wxFlexGridSizer* fgSizer2;
-  fgSizer2 = new wxFlexGridSizer(5, 2, 0, 0);
-
+  // Create selection check-boxes.
+  wxFlexGridSizer* group = CreateGroup();
   m_checkBoxPosition =
-      new wxCheckBox(itemDialog1, wxID_ANY, _("Position"), wxDefaultPosition,
-                     wxDefaultSize, wxALIGN_LEFT);
-  m_checkBoxPosition->SetValue(true);
-  fgSizer2->Add(m_checkBoxPosition, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
-  wxStaticText* label2 =
-      new wxStaticText(itemDialog1, wxID_ANY, _("Show Waypoint position."),
-                       wxDefaultPosition, wxDefaultSize);
-  fgSizer2->Add(label2, 1, wxALL | wxALIGN_CENTER_VERTICAL, 5);
-
-  m_checkBoxCourse =
-      new wxCheckBox(itemDialog1, wxID_ANY, _("Course"), wxDefaultPosition,
-                     wxDefaultSize, wxALIGN_LEFT);
-  m_checkBoxCourse->SetValue(true);
-  fgSizer2->Add(m_checkBoxCourse, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
-  wxStaticText* label3 =
-      new wxStaticText(itemDialog1, wxID_ANY,
-                       _("Show course from each Waypoint to the next one."),
-                       wxDefaultPosition, wxDefaultSize);
-  fgSizer2->Add(label3, 1, wxALL | wxALIGN_CENTER_VERTICAL, 5);
-
+      AddCheckBox(group, "Position", "Show Waypoint position.", true);
+  m_checkBoxCourse = AddCheckBox(
+      group, "Course", "Show course from each Waypoint to the next one.", true);
   m_checkBoxDistance =
-      new wxCheckBox(itemDialog1, wxID_ANY, _("Distance"), wxDefaultPosition,
-                     wxDefaultSize, wxALIGN_LEFT);
-  m_checkBoxDistance->SetValue(true);
-  fgSizer2->Add(m_checkBoxDistance, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
-  wxStaticText* label4 =
-      new wxStaticText(itemDialog1, wxID_ANY,
-                       _("Show Distance from each Waypoint to the next one."),
-                       wxDefaultPosition, wxDefaultSize);
-  fgSizer2->Add(label4, 1, wxALL | wxALIGN_CENTER_VERTICAL, 5);
+      AddCheckBox(group, "Distance",
+                  "Show Distance from each Waypoint to the next one.", true);
+  m_checkBoxTime = AddCheckBox(group, "Time", "Show Time", true);
+  m_checkBoxTime = AddCheckBox(group, "Speed", "Show Speed", true);
 
-  m_checkBoxTime =
-      new wxCheckBox(itemDialog1, wxID_ANY, _("Time"), wxDefaultPosition,
-                     wxDefaultSize, wxALIGN_LEFT);
-  m_checkBoxTime->SetValue(true);
-  fgSizer2->Add(m_checkBoxTime, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
-  wxStaticText* label5 = new wxStaticText(
-      itemDialog1, wxID_ANY, _("Show Time."), wxDefaultPosition, wxDefaultSize);
-  fgSizer2->Add(label5, 1, wxALL | wxALIGN_CENTER_VERTICAL, 5);
-
-  m_checkBoxSpeed =
-      new wxCheckBox(itemDialog1, wxID_ANY, _("Speed"), wxDefaultPosition,
-                     wxDefaultSize, wxALIGN_LEFT);
-  m_checkBoxSpeed->SetValue(true);
-  fgSizer2->Add(m_checkBoxSpeed, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
-  wxStaticText* label6 =
-      new wxStaticText(itemDialog1, wxID_ANY, _("Show Speed."),
-                       wxDefaultPosition, wxDefaultSize);
-  fgSizer2->Add(label6, 1, wxALL | wxALIGN_CENTER_VERTICAL, 5);
-
-  itemBoxSizer1->Add(fgSizer2, 5, wxEXPAND, 5);
-
-  wxBoxSizer* itemBoxSizer16 = new wxBoxSizer(wxHORIZONTAL);
-  itemBoxSizer1->Add(itemBoxSizer16, 0, wxALIGN_RIGHT | wxALL, 5);
-
-  m_CancelButton =
-      new wxButton(itemDialog1, ID_TRACKPRINT_SELECTION_CANCEL, _("Cancel"),
-                   wxDefaultPosition, wxDefaultSize, 0);
-  itemBoxSizer16->Add(m_CancelButton, 0,
-                      wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL | wxALL, 5);
-
-  m_OKButton = new wxButton(itemDialog1, ID_TRACKPRINT_SELECTION_OK, _("OK"),
-                            wxDefaultPosition, wxDefaultSize, 0);
-  itemBoxSizer16->Add(m_OKButton, 0,
-                      wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL | wxALL, 5);
-  m_OKButton->SetDefault();
-
-  SetColorScheme((ColorScheme)0);
+  // Add the group to the dialog.
+  wxStaticBoxSizer* sizer = AddGroup(group, "Elements to print...");
+  Finalize(sizer);
 }
-
-void TrackPrintSelection::SetColorScheme(ColorScheme cs) { DimeControl(this); }
 
 /*
  * Should we show tooltips?
@@ -346,16 +265,7 @@ void TrackPrintSelection::SetColorScheme(ColorScheme cs) { DimeControl(this); }
 
 bool TrackPrintSelection::ShowToolTips() { return TRUE; }
 
-void TrackPrintSelection::SetDialogTitle(const wxString& title) {
-  SetTitle(title);
-}
-
-void TrackPrintSelection::OnTrackpropCancelClick(wxCommandEvent& event) {
-  Close();  // Hide();
-  event.Skip();
-}
-
-void TrackPrintSelection::OnTrackpropOkClick(wxCommandEvent& event) {
+void TrackPrintSelection::OnOKClick(wxCommandEvent& event) {
   std::vector<bool> toPrintOut;
   toPrintOut.push_back(m_checkBoxPosition->GetValue());
   toPrintOut.push_back(m_checkBoxCourse->GetValue());

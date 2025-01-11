@@ -31,6 +31,9 @@
 #include <wx/print.h>
 #include <wx/string.h>
 
+/*!
+ * OpenCPN print class.
+ */
 class OpenCPNPrint : public wxPrintout {
 public:
   OpenCPNPrint(const wxChar *title = _T("OpenCPN print")) : wxPrintout(title) {}
@@ -52,13 +55,28 @@ private:
  * Print selection dialog base.
  */
 class PrintSelectionDialog : public wxDialog {
+  DECLARE_EVENT_TABLE()
+
 public:
   // Constructors
-  PrintSelectionDialog(wxWindow *parent, wxWindowID id, const wxString &caption,
-                       const wxPoint &pos, const wxSize &size, long style);
+  PrintSelectionDialog(wxWindow *parent, const wxString &caption);
 
-  // Destructor
+  // Destructor to prevent leakage.
   virtual ~PrintSelectionDialog();
+
+  wxButton *m_CancelButton;
+  wxButton *m_OKButton;
+
+  // Functions to create the dialog.
+  wxFlexGridSizer *CreateGroup();
+  wxStaticBoxSizer *AddGroup(wxFlexGridSizer *grid, const wxString &title);
+  wxCheckBox *AddCheckBox(wxFlexGridSizer *group, const wxString label,
+                          const wxString &description, bool checked = true);
+  void Finalize(wxStaticBoxSizer *sizer);
+
+  // Event handlers
+  void OnCancelClick(wxCommandEvent &event);
+  virtual void OnOKClick(wxCommandEvent &event) = 0;
 };
 
 #endif  //  _OCPN_PRINT_H__

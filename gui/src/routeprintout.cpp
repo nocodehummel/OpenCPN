@@ -430,154 +430,38 @@ void RoutePrintout::DrawPage(wxDC* dc) {
 // ---------- RoutePrintSelection dialof implementation
 
 /*!
- * RoutePrintSelection type definition
- */
-
-/*!
- * RouteProp event table definition
- */
-
-BEGIN_EVENT_TABLE(RoutePrintSelection, wxDialog)
-EVT_BUTTON(ID_ROUTEPRINT_SELECTION_CANCEL,
-           RoutePrintSelection::OnRoutepropCancelClick)
-EVT_BUTTON(ID_ROUTEPRINT_SELECTION_OK, RoutePrintSelection::OnRoutepropOkClick)
-END_EVENT_TABLE()
-
-/*!
  * RouteProp constructors
  */
 RoutePrintSelection::RoutePrintSelection(wxWindow* parent, Route* route,
-                                         wxWindowID id, const wxString& caption,
-                                         const wxPoint& pos, const wxSize& size,
-                                         long style)
-    : PrintSelectionDialog(parent, id, caption, pos, size, style) {
+                                         const wxString& caption)
+    : PrintSelectionDialog(parent, caption) {
   m_route = route;
 
-  CreateControls();
-  Centre();
+  // Create selection check-boxes.
+  wxFlexGridSizer* group = CreateGroup();
+  m_checkBoxWPName = AddCheckBox(group, "Name", "Show Waypoint name.", true);
+  m_checkBoxWPPosition =
+      AddCheckBox(group, "Position", "Show Waypoint position.", true);
+  m_checkBoxWPCourse = AddCheckBox(
+      group, "Course", "Show course from each Waypoint to the next one.", true);
+  m_checkBoxWPDistanceToNext =
+      AddCheckBox(group, "Distance",
+                  "Show Distance from each Waypoint to the next one.", true);
+  m_checkBoxWPDescription =
+      AddCheckBox(group, "Description", "Show Waypoint description.", true);
+  m_checkBoxWPSpeed =
+      AddCheckBox(group, "Speed", "Show planned speed to Waypoint.", true);
+  m_checkBoxWPETA =
+      AddCheckBox(group, "ETA", "Show Estimated Time of Arrival.", true);
+  m_checkBoxWPTide = AddCheckBox(group, "Tide event",
+                                 "Show next tide event at station.", true);
+
+  // Add the group to the dialog.
+  wxStaticBoxSizer* sizer = AddGroup(group, "Waypoint elements to print...");
+  Finalize(sizer);
 }
 
 RoutePrintSelection::~RoutePrintSelection() {}
-
-/*!
- * Control creation for RouteProp
- */
-void RoutePrintSelection::CreateControls() {
-  RoutePrintSelection* itemDialog1 = this;
-
-  wxStaticBox* itemStaticBoxSizer3Static = new wxStaticBox(
-      itemDialog1, wxID_ANY, _("Waypoint elements to print..."));
-
-  wxStaticBoxSizer* itemBoxSizer1 =
-      new wxStaticBoxSizer(itemStaticBoxSizer3Static, wxVERTICAL);
-  itemDialog1->SetSizer(itemBoxSizer1);
-
-  wxFlexGridSizer* fgSizer2;
-  fgSizer2 = new wxFlexGridSizer(0, 2, 0, 0);
-
-  m_checkBoxWPName =
-      new wxCheckBox(itemDialog1, wxID_ANY, _("Name"), wxDefaultPosition,
-                     wxDefaultSize, wxALIGN_LEFT);
-  m_checkBoxWPName->SetValue(true);
-  fgSizer2->Add(m_checkBoxWPName, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
-
-  wxStaticText* label1 =
-      new wxStaticText(itemDialog1, wxID_ANY, _("Show Waypoint name."),
-                       wxDefaultPosition, wxDefaultSize);
-  fgSizer2->Add(label1, 1, wxALL | wxALIGN_CENTER_VERTICAL, 5);
-
-  m_checkBoxWPPosition =
-      new wxCheckBox(itemDialog1, wxID_ANY, _("Position"), wxDefaultPosition,
-                     wxDefaultSize, wxALIGN_LEFT);
-  m_checkBoxWPPosition->SetValue(true);
-  fgSizer2->Add(m_checkBoxWPPosition, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
-  wxStaticText* label2 =
-      new wxStaticText(itemDialog1, wxID_ANY, _("Show Waypoint position."),
-                       wxDefaultPosition, wxDefaultSize);
-  fgSizer2->Add(label2, 1, wxALL | wxALIGN_CENTER_VERTICAL, 5);
-
-  m_checkBoxWPCourse =
-      new wxCheckBox(itemDialog1, wxID_ANY, _("Course"), wxDefaultPosition,
-                     wxDefaultSize, wxALIGN_LEFT);
-  m_checkBoxWPCourse->SetValue(true);
-  fgSizer2->Add(m_checkBoxWPCourse, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
-  wxStaticText* label3 =
-      new wxStaticText(itemDialog1, wxID_ANY,
-                       _("Show course from each Waypoint to the next one."),
-                       wxDefaultPosition, wxDefaultSize);
-  fgSizer2->Add(label3, 1, wxALL | wxALIGN_CENTER_VERTICAL, 5);
-
-  m_checkBoxWPDistanceToNext =
-      new wxCheckBox(itemDialog1, wxID_ANY, _("Distance"), wxDefaultPosition,
-                     wxDefaultSize, wxALIGN_LEFT);
-  m_checkBoxWPDistanceToNext->SetValue(true);
-  fgSizer2->Add(m_checkBoxWPDistanceToNext, 0, wxALL | wxALIGN_CENTER_VERTICAL,
-                5);
-  wxStaticText* label4 =
-      new wxStaticText(itemDialog1, wxID_ANY,
-                       _("Show Distance from each Waypoint to the next one."),
-                       wxDefaultPosition, wxDefaultSize);
-  fgSizer2->Add(label4, 1, wxALL | wxALIGN_CENTER_VERTICAL, 5);
-
-  m_checkBoxWPDescription =
-      new wxCheckBox(itemDialog1, wxID_ANY, _("Description"), wxDefaultPosition,
-                     wxDefaultSize, wxALIGN_LEFT);
-  m_checkBoxWPDescription->SetValue(true);
-  fgSizer2->Add(m_checkBoxWPDescription, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
-  wxStaticText* label5 =
-      new wxStaticText(itemDialog1, wxID_ANY, _("Show Waypoint description."),
-                       wxDefaultPosition, wxDefaultSize);
-  fgSizer2->Add(label5, 1, wxALL | wxALIGN_CENTER_VERTICAL, 5);
-
-  m_checkBoxWPSpeed =
-      new wxCheckBox(itemDialog1, wxID_ANY, _("Speed"), wxDefaultPosition,
-                     wxDefaultSize, wxALIGN_LEFT);
-  m_checkBoxWPSpeed->SetValue(true);
-  fgSizer2->Add(m_checkBoxWPSpeed, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
-  wxStaticText* label6 = new wxStaticText(itemDialog1, wxID_ANY,
-                                          _("Show planned speed to Waypoint."),
-                                          wxDefaultPosition, wxDefaultSize);
-  fgSizer2->Add(label6, 1, wxALL | wxALIGN_CENTER_VERTICAL, 5);
-
-  m_checkBoxWPETA =
-      new wxCheckBox(itemDialog1, wxID_ANY, _("ETA"), wxDefaultPosition,
-                     wxDefaultSize, wxALIGN_LEFT);
-  m_checkBoxWPETA->SetValue(true);
-  fgSizer2->Add(m_checkBoxWPETA, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
-  wxStaticText* label7 = new wxStaticText(itemDialog1, wxID_ANY,
-                                          _("Show Estimated Time of Arrival."),
-                                          wxDefaultPosition, wxDefaultSize);
-  fgSizer2->Add(label7, 1, wxALL | wxALIGN_CENTER_VERTICAL, 5);
-
-  m_checkBoxWPTide =
-      new wxCheckBox(itemDialog1, wxID_ANY, _("Tide event"), wxDefaultPosition,
-                     wxDefaultSize, wxALIGN_LEFT);
-  m_checkBoxWPTide->SetValue(true);
-  fgSizer2->Add(m_checkBoxWPTide, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
-  wxStaticText* label8 = new wxStaticText(itemDialog1, wxID_ANY,
-                                          _("Show next tide event at station."),
-                                          wxDefaultPosition, wxDefaultSize);
-  fgSizer2->Add(label8, 1, wxALL | wxALIGN_CENTER_VERTICAL, 5);
-
-  itemBoxSizer1->Add(fgSizer2, 5, wxEXPAND, 5);
-
-  wxBoxSizer* itemBoxSizer16 = new wxBoxSizer(wxHORIZONTAL);
-  itemBoxSizer1->Add(itemBoxSizer16, 0, wxALIGN_RIGHT | wxALL, 5);
-
-  m_CancelButton =
-      new wxButton(itemDialog1, ID_ROUTEPRINT_SELECTION_CANCEL, _("Cancel"),
-                   wxDefaultPosition, wxDefaultSize, 0);
-  itemBoxSizer16->Add(m_CancelButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
-
-  m_OKButton = new wxButton(itemDialog1, ID_ROUTEPRINT_SELECTION_OK, _("OK"),
-                            wxDefaultPosition, wxDefaultSize, 0);
-  itemBoxSizer16->Add(m_OKButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
-  m_OKButton->SetDefault();
-
-  SetColorScheme((ColorScheme)0);
-}
-
-void RoutePrintSelection::SetColorScheme(ColorScheme cs) { DimeControl(this); }
 
 /*
  * Should we show tooltips?
@@ -585,16 +469,7 @@ void RoutePrintSelection::SetColorScheme(ColorScheme cs) { DimeControl(this); }
 
 bool RoutePrintSelection::ShowToolTips() { return TRUE; }
 
-void RoutePrintSelection::SetDialogTitle(const wxString& title) {
-  SetTitle(title);
-}
-
-void RoutePrintSelection::OnRoutepropCancelClick(wxCommandEvent& event) {
-  Close();  // Hide();
-  event.Skip();
-}
-
-void RoutePrintSelection::OnRoutepropOkClick(wxCommandEvent& event) {
+void RoutePrintSelection::OnOKClick(wxCommandEvent& event) {
   std::vector<bool> toPrintOut;
   toPrintOut.push_back(m_checkBoxWPName->GetValue());
   toPrintOut.push_back(m_checkBoxWPPosition->GetValue());

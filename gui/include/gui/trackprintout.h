@@ -71,44 +71,24 @@ protected:
   int textOffsetY;
 };
 
-// track elements selection dialog
-///@begin control identifiers
-#define ID_TRACKPRINTSELECTION 9000
-#define SYMBOL_TRACKPRINT_SELECTION_STYLE \
-  wxCAPTION | wxRESIZE_BORDER | wxSYSTEM_MENU | wxCLOSE_BOX
-#define SYMBOL_TRACKPRINT_SELECTION_TITLE _("Print Track Selection")
-#define SYMBOL_TRACKPRINT_SELECTION_IDNAME ID_TRACKPRINTSELECTION
-#define SYMBOL_TRACKPRINT_SELECTION_SIZE wxSize(750, 300)
-#define SYMBOL_TRACKPRINT_SELECTION_POSITION wxDefaultPosition
+#define SYMBOL_TRACKPRINT_SELECTION_TITLE _("Print Route Selection")
 
-#define ID_TRACKPRINT_SELECTION_OK 9001
-#define ID_TRACKPRINT_SELECTION_CANCEL 9002
-
+/*!
+ * Track print selection dialog implementation.
+ */
 class TrackPrintSelection : public PrintSelectionDialog {
-  DECLARE_EVENT_TABLE()
-
 public:
   // Constructor
   TrackPrintSelection(
       wxWindow* parent, Track* track, OCPNTrackListCtrl* lcPoints,
-      wxWindowID id = SYMBOL_TRACKPRINT_SELECTION_IDNAME,
-      const wxString& caption = SYMBOL_TRACKPRINT_SELECTION_TITLE,
-      const wxPoint& pos = SYMBOL_TRACKPRINT_SELECTION_POSITION,
-      const wxSize& size = SYMBOL_TRACKPRINT_SELECTION_SIZE,
-      long style = SYMBOL_TRACKPRINT_SELECTION_STYLE);
-
-  void CreateControls();
-  void SetColorScheme(ColorScheme cs);
-  void SetDialogTitle(const wxString& title);
-  void OnTrackpropCancelClick(wxCommandEvent& event);
-  void OnTrackpropOkClick(wxCommandEvent& event);
+      const wxString& caption = SYMBOL_TRACKPRINT_SELECTION_TITLE);
 
   // Should we show tooltips?
   static bool ShowToolTips();
 
-  wxButton* m_CancelButton;
-  wxButton* m_OKButton;
+  void OnOKClick(wxCommandEvent& event) override;
 
+private:
   wxCheckBox* m_checkBoxPosition;
   wxCheckBox* m_checkBoxCourse;
   wxCheckBox* m_checkBoxDistance;

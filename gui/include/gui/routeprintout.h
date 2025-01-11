@@ -72,48 +72,27 @@ protected:
   int textOffsetY;
 };
 
-// route elements selection dialog
-///@begin control identifiers
-#define ID_ROUTEPRINTSELECTION 9000
-#define SYMBOL_ROUTEPRINT_SELECTION_STYLE \
-  wxCAPTION | wxRESIZE_BORDER | wxSYSTEM_MENU | wxCLOSE_BOX
 #define SYMBOL_ROUTEPRINT_SELECTION_TITLE _("Print Route Selection")
-#define SYMBOL_ROUTEPRINT_SELECTION_IDNAME ID_ROUTEPRINTSELECTION
-#define SYMBOL_ROUTEPRINT_SELECTION_SIZE wxSize(750, 450)
-#define SYMBOL_ROUTEPRINT_SELECTION_POSITION wxDefaultPosition
 
-#define ID_ROUTEPRINT_SELECTION_OK 9001
-#define ID_ROUTEPRINT_SELECTION_CANCEL 9002
-
+/**
+ * Route print selection dialog implementation.
+ */
 class RoutePrintSelection : public PrintSelectionDialog {
-  DECLARE_EVENT_TABLE()
-
 public:
   // Constructor
   RoutePrintSelection(
       wxWindow* parent, Route* route,
-      wxWindowID id = SYMBOL_ROUTEPRINT_SELECTION_IDNAME,
-      const wxString& caption = SYMBOL_ROUTEPRINT_SELECTION_TITLE,
-      const wxPoint& pos = SYMBOL_ROUTEPRINT_SELECTION_POSITION,
-      const wxSize& size = SYMBOL_ROUTEPRINT_SELECTION_SIZE,
-      long style = SYMBOL_ROUTEPRINT_SELECTION_STYLE);
+      const wxString& caption = SYMBOL_ROUTEPRINT_SELECTION_TITLE);
 
   // Destructor
   ~RoutePrintSelection();
 
-  void CreateControls();
-
-  void SetColorScheme(ColorScheme cs);
-  void SetDialogTitle(const wxString& title);
-  void OnRoutepropCancelClick(wxCommandEvent& event);
-  void OnRoutepropOkClick(wxCommandEvent& event);
-
   // Should we show tooltips?
   static bool ShowToolTips();
 
-  wxButton* m_CancelButton;
-  wxButton* m_OKButton;
+  void OnOKClick(wxCommandEvent& event) override;
 
+private:
   wxCheckBox* m_checkBoxWPName;
   wxCheckBox* m_checkBoxWPPosition;
   wxCheckBox* m_checkBoxWPCourse;
