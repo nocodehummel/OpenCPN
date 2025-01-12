@@ -1386,8 +1386,7 @@ void TrackPropDlg::OnTrackPropCopyTxtClick(wxCommandEvent& event) {
 }
 
 void TrackPropDlg::OnPrintBtnClick(wxCommandEvent& event) {
-  TrackPrintSelection* dlg =
-      new TrackPrintSelection(this, m_pTrack, m_lcPoints);
+  TrackPrintDialog* dlg = new TrackPrintDialog(this, m_pTrack, m_lcPoints);
   DimeControl(dlg);
   dlg->ShowModal();
 }

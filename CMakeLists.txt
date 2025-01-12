@@ -810,6 +810,7 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/ocpn_pixel.h
     ${GUI_HDR_DIR}/OCPNPlatform.h
     ${GUI_HDR_DIR}/ocpn_print.h
+    ${GUI_HDR_DIR}/ocpn_print_dlg.h
     ${GUI_HDR_DIR}/OCPN_AUIManager.h
     ${GUI_HDR_DIR}/OCPNRegion.h
     ${GUI_HDR_DIR}/options.h
@@ -933,6 +934,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/ocpn_pixel.cpp
     ${GUI_SRC_DIR}/OCPNPlatform.cpp
     ${GUI_SRC_DIR}/ocpn_print.cpp
+    ${GUI_SRC_DIR}/ocpn_print_dlg.cpp
     ${GUI_SRC_DIR}/OCPNRegion.cpp
     ${GUI_SRC_DIR}/options.cpp
     ${GUI_SRC_DIR}/Osenc.cpp

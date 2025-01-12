@@ -41,6 +41,7 @@
 #include "TrackPropDlg.h"
 #include "printtable.h"
 #include "ocpn_print.h"
+#include "ocpn_print_dlg.h"
 #include "ocpn_frame.h"
 
 class TrackPrintout : public OpenCPNPrint {
@@ -76,12 +77,11 @@ protected:
 /*!
  * Track print selection dialog implementation.
  */
-class TrackPrintSelection : public PrintSelectionDialog {
+class TrackPrintDialog : public PrintDialog {
 public:
   // Constructor
-  TrackPrintSelection(
-      wxWindow* parent, Track* track, OCPNTrackListCtrl* lcPoints,
-      const wxString& caption = SYMBOL_TRACKPRINT_SELECTION_TITLE);
+  TrackPrintDialog(wxWindow* parent, Track* track, OCPNTrackListCtrl* lcPoints,
+                   const wxString& caption = SYMBOL_TRACKPRINT_SELECTION_TITLE);
 
   // Should we show tooltips?
   static bool ShowToolTips();

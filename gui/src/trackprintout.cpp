@@ -233,12 +233,12 @@ void TrackPrintout::DrawPage(wxDC* dc) {
 }
 
 /*!
- * Track print selection dialog implementation.
+ * Track print dialog implementation.
  */
-TrackPrintSelection::TrackPrintSelection(wxWindow* parent, Track* _track,
-                                         OCPNTrackListCtrl* lcPoints,
-                                         const wxString& caption)
-    : PrintSelectionDialog(parent, caption) {
+TrackPrintDialog::TrackPrintDialog(wxWindow* parent, Track* _track,
+                                   OCPNTrackListCtrl* lcPoints,
+                                   const wxString& caption)
+    : PrintDialog(parent, caption) {
   m_track = _track;
   m_lcPoints = lcPoints;
 
@@ -262,10 +262,12 @@ TrackPrintSelection::TrackPrintSelection(wxWindow* parent, Track* _track,
 /*
  * Should we show tooltips?
  */
+bool TrackPrintDialog::ShowToolTips() { return TRUE; }
 
-bool TrackPrintSelection::ShowToolTips() { return TRUE; }
-
-void TrackPrintSelection::OnOKClick(wxCommandEvent& event) {
+/*!
+ * Event handler for OK button.
+ */
+void TrackPrintDialog::OnOKClick(wxCommandEvent& event) {
   std::vector<bool> toPrintOut;
   toPrintOut.push_back(m_checkBoxPosition->GetValue());
   toPrintOut.push_back(m_checkBoxCourse->GetValue());

@@ -26,6 +26,7 @@
 #include <iostream>
 #include <sstream>
 #include <iomanip>
+#include <map>
 
 #include <wx/wxprec.h>
 
@@ -427,14 +428,12 @@ void RoutePrintout::DrawPage(wxDC* dc) {
   }
 }
 
-// ---------- RoutePrintSelection dialof implementation
-
 /*!
- * RouteProp constructors
+ * Route print dialog implementation.
  */
-RoutePrintSelection::RoutePrintSelection(wxWindow* parent, Route* route,
-                                         const wxString& caption)
-    : PrintSelectionDialog(parent, caption) {
+RoutePrintDialog::RoutePrintDialog(wxWindow* parent, Route* route,
+                                   const wxString& caption)
+    : PrintDialog(parent, caption) {
   m_route = route;
 
   // Create selection check-boxes.
@@ -461,15 +460,17 @@ RoutePrintSelection::RoutePrintSelection(wxWindow* parent, Route* route,
   Finalize(sizer);
 }
 
-RoutePrintSelection::~RoutePrintSelection() {}
+RoutePrintDialog::~RoutePrintDialog() {}
 
 /*
  * Should we show tooltips?
  */
+bool RoutePrintDialog::ShowToolTips() { return TRUE; }
 
-bool RoutePrintSelection::ShowToolTips() { return TRUE; }
-
-void RoutePrintSelection::OnOKClick(wxCommandEvent& event) {
+/*!
+ * Event handler for OK button.
+ */
+void RoutePrintDialog::OnOKClick(wxCommandEvent& event) {
   std::vector<bool> toPrintOut;
   toPrintOut.push_back(m_checkBoxWPName->GetValue());
   toPrintOut.push_back(m_checkBoxWPPosition->GetValue());

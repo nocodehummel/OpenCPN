@@ -876,7 +876,7 @@ void RoutePropDlgImpl::SplitOnButtonClick(wxCommandEvent& event) {
 }
 
 void RoutePropDlgImpl::PrintOnButtonClick(wxCommandEvent& event) {
-  RoutePrintSelection* dlg = new RoutePrintSelection(this, m_pRoute);
+  RoutePrintDialog* dlg = new RoutePrintDialog(this, m_pRoute);
   DimeControl(dlg);
   dlg->ShowModal();
 }

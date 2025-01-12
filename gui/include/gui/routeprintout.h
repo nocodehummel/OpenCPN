@@ -40,6 +40,7 @@
 #include "navutil.h"
 #include "printtable.h"
 #include "ocpn_print.h"
+#include "ocpn_print_dlg.h"
 #include "ocpn_frame.h"
 
 class RoutePrintout : public OpenCPNPrint {
@@ -77,15 +78,14 @@ protected:
 /**
  * Route print selection dialog implementation.
  */
-class RoutePrintSelection : public PrintSelectionDialog {
+class RoutePrintDialog : public PrintDialog {
 public:
   // Constructor
-  RoutePrintSelection(
-      wxWindow* parent, Route* route,
-      const wxString& caption = SYMBOL_ROUTEPRINT_SELECTION_TITLE);
+  RoutePrintDialog(wxWindow* parent, Route* route,
+                   const wxString& caption = SYMBOL_ROUTEPRINT_SELECTION_TITLE);
 
   // Destructor
-  ~RoutePrintSelection();
+  ~RoutePrintDialog();
 
   // Should we show tooltips?
   static bool ShowToolTips();
