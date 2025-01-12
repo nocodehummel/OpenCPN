@@ -24,6 +24,8 @@
  **************************************************************************/
 #include "config.h"
 
+#include <wx/print.h>
+
 #include "chcanv.h"
 #include "glChartCanvas.h"
 #include "ocpn_frame.h"
@@ -34,6 +36,39 @@ extern MyFrame* gFrame;
 
 class ChartCanvas;
 ChartCanvas* GetFocusCanvas();
+
+// Global print data, to remember settings during the session
+extern wxPrintData* g_printData;
+
+/*!
+ * Set print orientation in global print data
+ * with first print in the session.
+ */
+void OpenCPNPrint::SetOrientation(wxPrintOrientation orientation) {
+  if (g_printData == NULL) {
+    g_printData = new wxPrintData;
+    g_printData->SetOrientation(orientation);
+  }
+}
+
+/*!
+ * Print the document.
+ */
+void OpenCPNPrint::Print(wxWindow* parent, bool dialog) {
+  wxPrintDialogData printDialogData(*g_printData);
+  printDialogData.EnablePageNumbers(m_enablePageNumbers);
+
+  wxPrinter printer(&printDialogData);
+  if (!printer.Print(parent, this, dialog)) {
+    if (wxPrinter::GetLastError() == wxPRINTER_ERROR) {
+      OCPNMessageBox(
+          NULL,
+          _("There was a problem printing.\nPerhaps your current printer is "
+            "not set correctly?"),
+          _T("OpenCPN"), wxOK);
+    }
+  }
+}
 
 bool OpenCPNPrint::OnPrintPage(int page) {
   wxDC* dc = GetDC();

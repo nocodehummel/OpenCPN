@@ -32,11 +32,15 @@
 #include <wx/string.h>
 
 /*!
- * OpenCPN print class.
+ * OpenCPN Print class is a derived class of wxPrintout.
+ * This class is required by wxPintout for members to
+ * override methods that to respond to calls.
  */
 class OpenCPNPrint : public wxPrintout {
 public:
-  OpenCPNPrint(const wxChar *title = _T("OpenCPN print")) : wxPrintout(title) {}
+  OpenCPNPrint(const wxChar *title = _T("OpenCPN print"))
+      : wxPrintout(title) {};
+
   virtual bool OnPrintPage(int page);
   virtual bool HasPage(int page);
   virtual bool OnBeginDocument(int startPage, int endPage);
@@ -44,11 +48,15 @@ public:
                            int *selPageTo);
 
   void DrawPageOne(wxDC *dc);
-
   void GenerateGLbmp(void);
+
+  void SetOrientation(wxPrintOrientation orientation);
+  void EnablePageNumbers(bool enable) { m_enablePageNumbers = enable; }
+  void Print(wxWindow *parent, bool dialog);
 
 private:
   wxBitmap m_GLbmp;
+  bool m_enablePageNumbers;
 };
 
 #endif  //  _OCPN_PRINT_H__

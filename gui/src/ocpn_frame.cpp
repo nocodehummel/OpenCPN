@@ -6460,35 +6460,27 @@ void MyFrame::DoPrint(void) {
 #endif
     Refresh();
 
-  if (NULL == g_printData) {
-    g_printData = new wxPrintData;
-    g_printData->SetOrientation(wxLANDSCAPE);
-    g_pageSetupData = new wxPageSetupDialogData;
-  }
-
-  wxPrintDialogData printDialogData(*g_printData);
-  printDialogData.EnablePageNumbers(false);
-
-  wxPrinter printer(&printDialogData);
-
   OpenCPNPrint printout(wxT("Chart Print"));
+  printout.SetOrientation(wxLANDSCAPE);
+  printout.EnablePageNumbers(false);
 
   //  In OperGL mode, make the bitmap capture of the screen before the print
   //  method starts as to be sure the "Abort..." dialog does not appear on
   //  the image
   if (g_bopengl) printout.GenerateGLbmp();
+  printout.Print(this, true);
 
-  if (!printer.Print(this, &printout, true)) {
-    if (wxPrinter::GetLastError() == wxPRINTER_ERROR)
-      OCPNMessageBox(NULL,
-                     _("There was a problem printing.\nPerhaps your current "
-                       "printer is not set correctly?"),
-                     _T("OpenCPN"), wxOK);
-    //        else
-    //            OCPNMessageBox(_T("Print Cancelled"), _T("OpenCPN"), wxOK);
-  } else {
-    (*g_printData) = printer.GetPrintDialogData().GetPrintData();
-  }
+  // if (!printer.Print(this, &printout, true)) {
+  //   if (wxPrinter::GetLastError() == wxPRINTER_ERROR)
+  //     OCPNMessageBox(NULL,
+  //                    _("There was a problem printing.\nPerhaps your current "
+  //                      "printer is not set correctly?"),
+  //                    _T("OpenCPN"), wxOK);
+  //   //        else
+  //   //            OCPNMessageBox(_T("Print Cancelled"), _T("OpenCPN"), wxOK);
+  // } else {
+  //   (*g_printData) = printer.GetPrintDialogData().GetPrintData();
+  // }
 
   // Pass two printout objects: for preview, and possible printing.
   /*

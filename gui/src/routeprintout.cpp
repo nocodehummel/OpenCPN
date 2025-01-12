@@ -84,10 +84,6 @@
 
 using namespace std;
 
-// Global print data, to remember settings during the session
-extern wxPrintData* g_printData;
-// Global page setup data
-extern wxPageSetupData* g_pageSetupData;
 // Global Tide and Current Manager
 extern TCMgr* ptcmgr;
 
@@ -481,35 +477,19 @@ void RoutePrintDialog::OnOKClick(wxCommandEvent& event) {
   toPrintOut.push_back(m_checkBoxWPETA->GetValue());
   toPrintOut.push_back(m_checkBoxWPTide->GetValue());
 
-  if (NULL == g_printData) {
-    g_printData = new wxPrintData;
-
-    // Elements to print
-    int sum = std::count(toPrintOut.begin(), toPrintOut.end(), true);
-    if (sum > 5) {
-      g_printData->SetOrientation(wxLANDSCAPE);
-    } else {
-      g_printData->SetOrientation(wxPORTRAIT);
-    }
-
-    g_pageSetupData = new wxPageSetupDialogData;
-  }
-
-  RoutePrintout* routeprintout =
+  RoutePrintout* printout =
       new RoutePrintout(toPrintOut, m_route, _("Route Print"));
 
-  wxPrintDialogData printDialogData(*g_printData);
-  printDialogData.EnablePageNumbers(true);
-
-  wxPrinter printer(&printDialogData);
-  if (!printer.Print(this, routeprintout, true)) {
-    if (wxPrinter::GetLastError() == wxPRINTER_ERROR) {
-      OCPNMessageBox(NULL,
-                     _("There was a problem printing.\nPerhaps your current "
-                       "printer is not set correctly?"),
-                     _T( "OpenCPN" ), wxOK);
-    }
+  // Elements to print
+  int sum = std::count(toPrintOut.begin(), toPrintOut.end(), true);
+  if (sum > 5) {
+    printout->SetOrientation(wxLANDSCAPE);
+  } else {
+    printout->SetOrientation(wxPORTRAIT);
   }
+
+  printout->EnablePageNumbers(true);
+  printout->Print(this, true);
 
   Close();
   event.Skip();

@@ -62,11 +62,6 @@ using namespace std;
 
 enum { PRINT_POSITION, PRINT_DISTANCE, PRINT_BEARING, PRINT_TIME, PRINT_SPEED };
 
-// Global print data, to remember settings during the session
-extern wxPrintData* g_printData;
-// Global page setup data
-extern wxPageSetupData* g_pageSetupData;
-
 TrackPrintout::TrackPrintout(std::vector<bool> _toPrintOut, Track* track,
                              OCPNTrackListCtrl* lcPoints, const wxString& title)
     : OpenCPNPrint(title), myTrack(track), toPrintOut(_toPrintOut) {
@@ -275,27 +270,11 @@ void TrackPrintDialog::OnOKClick(wxCommandEvent& event) {
   toPrintOut.push_back(m_checkBoxTime->GetValue());
   toPrintOut.push_back(m_checkBoxSpeed->GetValue());
 
-  if (NULL == g_printData) {
-    g_printData = new wxPrintData;
-    g_printData->SetOrientation(wxPORTRAIT);
-    g_pageSetupData = new wxPageSetupDialogData;
-  }
-
-  TrackPrintout* trackprintout =
+  TrackPrintout* printout =
       new TrackPrintout(toPrintOut, m_track, m_lcPoints, _("Track Print"));
-
-  wxPrintDialogData printDialogData(*g_printData);
-  printDialogData.EnablePageNumbers(true);
-
-  wxPrinter printer(&printDialogData);
-  if (!printer.Print(this, trackprintout, true)) {
-    if (wxPrinter::GetLastError() == wxPRINTER_ERROR) {
-      OCPNMessageBox(NULL,
-                     _("There was a problem printing.\nPerhaps your current "
-                       "printer is not set correctly?"),
-                     _T( "OpenCPN" ), wxOK);
-    }
-  }
+  printout->SetOrientation(wxPORTRAIT);
+  printout->EnablePageNumbers(true);
+  printout->Print(this, true);
 
   Close();  // Hide();
   event.Skip();
