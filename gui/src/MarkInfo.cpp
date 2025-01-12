@@ -33,8 +33,6 @@
 
 #include <wx/datetime.h>
 #include <wx/clipbrd.h>
-#include <wx/print.h>
-#include <wx/printdlg.h>
 #include <wx/stattext.h>
 #include <wx/clrpicker.h>
 #include <wx/bmpbuttn.h>
@@ -54,7 +52,6 @@
 #include "OCPNPlatform.h"
 #include "pluginmanager.h"
 #include "routemanagerdialog.h"
-#include "routeprintout.h"
 #include "RoutePropDlgImpl.h"
 #include "styles.h"
 #include "svg_utils.h"
@@ -75,8 +72,6 @@ extern ocpnStyle::StyleManager* g_StyleManager;
 extern MyFrame* gFrame;
 extern OCPNPlatform* g_Platform;
 extern wxString g_default_wp_icon;
-
-// Global print data, to remember settings during the session
 
 // Global page setup data
 
