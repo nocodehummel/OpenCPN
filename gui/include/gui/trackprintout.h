@@ -49,13 +49,9 @@ public:
   TrackPrintout(std::vector<bool> _toPrintOut, Track* track,
                 OCPNTrackListCtrl* lcPoints,
                 const wxString& title = _T( "My Track printout" ));
-  virtual bool OnPrintPage(int page);
-  void DrawPage(wxDC* dc);
-  virtual void OnPreparePrinting();
-  virtual bool HasPage(int num) { return num > 0 && num <= numberOfPages; };
 
-  virtual void GetPageInfo(int* minPage, int* maxPage, int* selPageFrom,
-                           int* selPageTo);
+  void OnPreparePrinting();
+  bool OnPrintPage(int page);
 
 protected:
   wxDC* myDC;
@@ -65,11 +61,13 @@ protected:
                                  // should be print out.
   static const int pN = 5;       // number of fields sofar
   int pageToPrint;
-  int numberOfPages;
   int marginX;
   int marginY;
   int textOffsetX;
   int textOffsetY;
+
+private:
+  void DrawPage(wxDC* dc);
 };
 
 #define SYMBOL_TRACKPRINT_SELECTION_TITLE _("Print Route Selection")

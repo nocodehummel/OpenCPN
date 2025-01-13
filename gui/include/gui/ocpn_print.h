@@ -27,7 +27,6 @@
 #define _OCPN_PRINT_H__
 
 #include <wx/dc.h>
-#include <wx/bitmap.h>
 #include <wx/print.h>
 #include <wx/string.h>
 
@@ -38,24 +37,23 @@
  */
 class OpenCPNPrint : public wxPrintout {
 public:
-  OpenCPNPrint(const wxChar *title = _T("OpenCPN print"))
-      : wxPrintout(title) {};
-
-  virtual bool OnPrintPage(int page);
-  virtual bool HasPage(int page);
-  virtual bool OnBeginDocument(int startPage, int endPage);
-  virtual void GetPageInfo(int *minPage, int *maxPage, int *selPageFrom,
-                           int *selPageTo);
-
-  void DrawPageOne(wxDC *dc);
-  void GenerateGLbmp(void);
+  OpenCPNPrint(const wxChar *title = _T("OpenCPN print"));
 
   void SetOrientation(wxPrintOrientation orientation);
   void EnablePageNumbers(bool enable) { m_enablePageNumbers = enable; }
   void Print(wxWindow *parent, bool dialog);
 
-private:
-  wxBitmap m_GLbmp;
+  // Generic methods required by wxPrintout.
+  bool HasPage(int page);
+  bool OnBeginDocument(int startPage, int endPage);
+  void GetPageInfo(int *minPage, int *maxPage, int *selPageFrom,
+                   int *selPageTo);
+
+  // Virtual to be implemented by derived class.
+  virtual bool OnPrintPage(int page) = 0;
+
+protected:
+  int m_numberOfPages;
   bool m_enablePageNumbers;
 };
 

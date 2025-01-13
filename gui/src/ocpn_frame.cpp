@@ -6460,7 +6460,7 @@ void MyFrame::DoPrint(void) {
 #endif
     Refresh();
 
-  OpenCPNPrint printout(wxT("Chart Print"));
+  ChartPrintout printout;
   printout.SetOrientation(wxLANDSCAPE);
   printout.EnablePageNumbers(false);
 

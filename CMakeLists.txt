@@ -765,6 +765,7 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/cat_settings.h
     ${GUI_HDR_DIR}/chartbase.h
     ${GUI_HDR_DIR}/chart_ctx_factory.h
+    ${GUI_HDR_DIR}/chart_printout.h
     ${GUI_HDR_DIR}/chartdb.h
     ${GUI_HDR_DIR}/chartdbs.h
     ${GUI_HDR_DIR}/chartimg.h
@@ -886,6 +887,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/chartdb.cpp
     ${GUI_SRC_DIR}/chartdbs.cpp
     ${GUI_SRC_DIR}/chartimg.cpp
+    ${GUI_SRC_DIR}/chart_printout.cpp
     ${GUI_SRC_DIR}/chcanv.cpp
     ${GUI_SRC_DIR}/ChInfoWin.cpp
     ${GUI_SRC_DIR}/cm93.cpp

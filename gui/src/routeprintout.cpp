@@ -266,14 +266,6 @@ RoutePrintout::RoutePrintout(std::vector<bool> _toPrintOut, Route* route,
   }
 }
 
-void RoutePrintout::GetPageInfo(int* minPage, int* maxPage, int* selPageFrom,
-                                int* selPageTo) {
-  *minPage = 1;
-  *maxPage = numberOfPages;
-  *selPageFrom = 1;
-  *selPageTo = numberOfPages;
-}
-
 void RoutePrintout::OnPreparePrinting() {
   pageToPrint = 1;
   wxDC* dc = GetDC();
@@ -305,13 +297,13 @@ void RoutePrintout::OnPreparePrinting() {
   dc->SetDeviceOrigin((long)marginX, (long)marginY);
 
   table.AdjustCells(dc, marginX, marginY);
-  numberOfPages = table.GetNumberPages();
+  m_numberOfPages = table.GetNumberPages();
 }
 
 bool RoutePrintout::OnPrintPage(int page) {
   wxDC* dc = GetDC();
   if (dc) {
-    if (page <= numberOfPages) {
+    if (page <= m_numberOfPages) {
       pageToPrint = page;
       DrawPage(dc);
       return true;

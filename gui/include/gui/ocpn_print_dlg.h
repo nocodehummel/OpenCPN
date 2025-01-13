@@ -19,7 +19,7 @@ public:
   PrintDialog(wxWindow *parent, const wxString &caption);
 
   // Destructor to prevent leakage.
-  virtual ~PrintDialog();
+  ~PrintDialog();
 
   // Map with string keys and Person object values
   wxButton *m_CancelButton;
