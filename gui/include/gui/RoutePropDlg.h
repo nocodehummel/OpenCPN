@@ -123,8 +123,7 @@ protected:
   wxButton* m_btnExtend;
   wxButton* m_btnSplit;
   wxStdDialogButtonSizer* m_sdbSizerBtns;
-  wxButton* m_sdbSizerBtnsOK;
-  wxButton* m_sdbSizerBtnsCancel;
+  wxButton* m_sdbSizerBtnsSave;
 
   // Virtual event handlers, overide them in your derived class
   virtual void RoutePropDlgOnClose(wxCloseEvent& event) { event.Skip(); }
@@ -163,8 +162,7 @@ protected:
   virtual void PrintOnButtonClick(wxCommandEvent& event) { event.Skip(); }
   virtual void ExtendOnButtonClick(wxCommandEvent& event) { event.Skip(); }
   virtual void SplitOnButtonClick(wxCommandEvent& event) { event.Skip(); }
-  virtual void BtnsOnCancelButtonClick(wxCommandEvent& event) { event.Skip(); }
-  virtual void BtnsOnOKButtonClick(wxCommandEvent& event) { event.Skip(); }
+  virtual void BtnsOnSaveButtonClick(wxCommandEvent& event) { event.Skip(); }
 
 public:
   RoutePropDlg(wxWindow* parent, wxWindowID id = wxID_ANY,

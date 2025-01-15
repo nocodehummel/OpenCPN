@@ -75,7 +75,7 @@ protected:
     ResetChanges();
     Hide();
   }
-  void BtnsOnOKButtonClick(wxCommandEvent& event);
+  void BtnsOnSaveButtonClick(wxCommandEvent& event);
   void OnRoutePropMenuSelected(wxCommandEvent& event);
   void OnRoutepropCopyTxtClick(wxCommandEvent& event);
   void ItemEditOnMenuSelection(wxCommandEvent& event);

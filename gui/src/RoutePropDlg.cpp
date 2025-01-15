@@ -539,10 +539,8 @@ RoutePropDlg::RoutePropDlg(wxWindow* parent, wxWindowID id,
   wSizerCustomBtns->Add(0, 0, 1, wxEXPAND, 5);
 
   m_sdbSizerBtns = new wxStdDialogButtonSizer();
-  m_sdbSizerBtnsOK = new wxButton(this, wxID_OK);
-  m_sdbSizerBtns->AddButton(m_sdbSizerBtnsOK);
-  m_sdbSizerBtnsCancel = new wxButton(this, wxID_CANCEL, _("Cancel"));
-  m_sdbSizerBtns->AddButton(m_sdbSizerBtnsCancel);
+  m_sdbSizerBtnsSave = new wxButton(this, wxID_OK, _("Save"));
+  m_sdbSizerBtns->AddButton(m_sdbSizerBtnsSave);
   m_sdbSizerBtns->Realize();
 
   wSizerCustomBtns->Add(m_sdbSizerBtns, 1, wxEXPAND, 5);
@@ -629,12 +627,9 @@ RoutePropDlg::RoutePropDlg(wxWindow* parent, wxWindowID id,
   m_btnSplit->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
                       wxCommandEventHandler(RoutePropDlg::SplitOnButtonClick),
                       NULL, this);
-  m_sdbSizerBtnsCancel->Connect(
+  m_sdbSizerBtnsSave->Connect(
       wxEVT_COMMAND_BUTTON_CLICKED,
-      wxCommandEventHandler(RoutePropDlg::BtnsOnCancelButtonClick), NULL, this);
-  m_sdbSizerBtnsOK->Connect(
-      wxEVT_COMMAND_BUTTON_CLICKED,
-      wxCommandEventHandler(RoutePropDlg::BtnsOnOKButtonClick), NULL, this);
+      wxCommandEventHandler(RoutePropDlg::BtnsOnSaveButtonClick), NULL, this);
 
   auto navobj = NavObjectChanges::getInstance();
   wxDEFINE_EVENT(EVT_ROUTEMAN_DEL_TRK, ObservedEvt);
@@ -717,12 +712,9 @@ RoutePropDlg::~RoutePropDlg() {
   m_btnSplit->Disconnect(
       wxEVT_COMMAND_BUTTON_CLICKED,
       wxCommandEventHandler(RoutePropDlg::SplitOnButtonClick), NULL, this);
-  m_sdbSizerBtnsCancel->Disconnect(
+  m_sdbSizerBtnsSave->Disconnect(
       wxEVT_COMMAND_BUTTON_CLICKED,
-      wxCommandEventHandler(RoutePropDlg::BtnsOnCancelButtonClick), NULL, this);
-  m_sdbSizerBtnsOK->Disconnect(
-      wxEVT_COMMAND_BUTTON_CLICKED,
-      wxCommandEventHandler(RoutePropDlg::BtnsOnOKButtonClick), NULL, this);
+      wxCommandEventHandler(RoutePropDlg::BtnsOnSaveButtonClick), NULL, this);
 
   delete m_menuLink;
   delete m_menuLinks;

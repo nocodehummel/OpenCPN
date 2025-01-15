@@ -981,6 +981,7 @@ void RoutePropDlgImpl::WaypointsOnDataViewListCtrlItemContextMenu(
   PopupMenu(&menu);
 }
 
+// ISSUE: resets only two properties?!
 void RoutePropDlgImpl::ResetChanges() {
   if (!m_pRoute) return;
   m_pRoute->m_PlannedSpeed = m_OrigRoute.m_PlannedSpeed;
@@ -1016,7 +1017,6 @@ void RoutePropDlgImpl::SaveChanges() {
 
     pConfig->UpdateRoute(m_pRoute);
     pConfig->UpdateSettings();
-    m_pRoute = NULL;
   }
 }
 
@@ -1027,13 +1027,11 @@ void RoutePropDlgImpl::SaveGeometry() {
   GetPosition(&g_route_prop_x, &g_route_prop_y);
 }
 
-void RoutePropDlgImpl::BtnsOnOKButtonClick(wxCommandEvent& event) {
+void RoutePropDlgImpl::BtnsOnSaveButtonClick(wxCommandEvent& event) {
   SaveChanges();
   if (pRouteManagerDialog && pRouteManagerDialog->IsShown()) {
     pRouteManagerDialog->UpdateRouteListCtrl();
   }
-  Hide();
-  SaveGeometry();
 }
 
 void RoutePropDlgImpl::SplitOnButtonClick(wxCommandEvent& event) {
