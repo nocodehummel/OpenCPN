@@ -203,9 +203,6 @@ EVT_BUTTON(ID_BTN_DESC_BASIC, MarkInfoDlg::OnExtDescriptionClick)
 EVT_BUTTON(ID_DEFAULT, MarkInfoDlg::DefautlBtnClicked)
 EVT_BUTTON(ID_BTN_SHOW_TIDES, MarkInfoDlg::ShowTidesBtnClicked)
 EVT_COMBOBOX(ID_BITMAPCOMBOCTRL, MarkInfoDlg::OnBitmapCombClick)
-EVT_CHECKBOX(ID_SHOWNAMECHECKBOXBASIC,
-             MarkInfoDlg::OnShowWaypointNameSelectBasic)
-EVT_CHECKBOX(ID_SHOWNAMECHECKBOX_EXT, MarkInfoDlg::OnShowWaypointNameSelectExt)
 EVT_CHECKBOX(ID_CHECKBOX_SCAMIN_VIS, MarkInfoDlg::OnSelectScaMinExt)
 EVT_TEXT(ID_DESCR_CTR_DESC, MarkInfoDlg::OnDescChangedExt)
 EVT_TEXT(ID_DESCR_CTR_BASIC, MarkInfoDlg::OnDescChangedBasic)
@@ -355,11 +352,6 @@ void MarkInfoDlg::Create() {
   bSizerName->Add(m_staticTextName, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
 
   wxBoxSizer* bSizerNameValue = new wxBoxSizer(wxVERTICAL);
-
-  m_checkBoxShowName =
-      new wxCheckBox(m_panelBasicProperties, wxID_ANY, wxEmptyString,
-                     wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER_VERTICAL);
-  bSizerName->Add(m_checkBoxShowName, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
 
   m_textName = new TextField(m_panelBasicProperties, wxID_ANY, wxEmptyString,
                              wxDefaultPosition, wxDefaultSize, 0);
@@ -1100,17 +1092,6 @@ void MarkInfoDlg::OnExtDescriptionClick(wxCommandEvent& event) {
   event.Skip();
 }
 
-void MarkInfoDlg::OnShowWaypointNameSelectBasic(wxCommandEvent& event) {
-  if (m_panelBasicProperties->IsShownOnScreen())
-    m_checkBoxShowNameExt->SetValue(m_checkBoxShowName->GetValue());
-  event.Skip();
-}
-void MarkInfoDlg::OnShowWaypointNameSelectExt(wxCommandEvent& event) {
-  if (m_panelExtendedProperties->IsShownOnScreen())
-    m_checkBoxShowName->SetValue(m_checkBoxShowNameExt->GetValue());
-  event.Skip();
-}
-
 void MarkInfoDlg::OnWptRangeRingsNoChange(wxCommandEvent& event) {
   if (!m_pRoutePoint->m_bIsInLayer) {
     m_textWaypointRangeRingsStep->Enable(
@@ -1409,7 +1390,7 @@ void MarkInfoDlg::DefautlBtnClicked(wxCommandEvent& event) {
         g_bUseWptScaMin = m_checkBoxScaMin->GetValue();
       }
       if (m_SaveDefaultDlg->NameCB->GetValue()) {
-        g_bShowWptName = m_checkBoxShowName->GetValue();
+        g_bShowWptName = m_checkBoxShowNameExt->GetValue();
       }
     }
     m_SaveDefaultDlg = NULL;
@@ -1503,7 +1484,6 @@ bool MarkInfoDlg::UpdateProperties(bool positionOnly) {
     m_textName->SetValue(m_pRoutePoint->GetName());
     m_textDescription->ChangeValue(m_pRoutePoint->m_MarkDescription);
     m_textCtrlExtDescription->ChangeValue(m_pRoutePoint->m_MarkDescription);
-    m_checkBoxShowName->SetValue(m_pRoutePoint->m_bShowName);
     m_checkBoxShowNameExt->SetValue(m_pRoutePoint->m_bShowName);
     m_checkBoxVisible->SetValue(m_pRoutePoint->m_bIsVisible);
     m_checkBoxScaMin->SetValue(m_pRoutePoint->GetUseSca());
@@ -1577,7 +1557,6 @@ bool MarkInfoDlg::UpdateProperties(bool positionOnly) {
       m_textLatitude->SetEditable(false);
       m_textLongitude->SetEditable(false);
       m_bcomboBoxIcon->Enable(false);
-      m_checkBoxShowName->Enable(false);
       m_checkBoxVisible->Enable(false);
       m_textArrivalRadius->SetEditable(false);
       m_checkBoxScaMin->Enable(false);
@@ -1601,7 +1580,6 @@ bool MarkInfoDlg::UpdateProperties(bool positionOnly) {
       m_textLatitude->SetEditable(true);
       m_textLongitude->SetEditable(true);
       m_bcomboBoxIcon->Enable(true);
-      m_checkBoxShowName->Enable(true);
       m_checkBoxVisible->Enable(true);
       m_textArrivalRadius->SetEditable(true);
       m_checkBoxScaMin->Enable(true);
@@ -1642,7 +1620,6 @@ bool MarkInfoDlg::UpdateProperties(bool positionOnly) {
       }
     }
     wxCommandEvent ev;
-    OnShowWaypointNameSelectBasic(ev);
     OnWptRangeRingsNoChange(ev);
     OnSelectScaMinExt(ev);
     UpdateHtmlList();
@@ -1706,7 +1683,7 @@ bool MarkInfoDlg::SaveChanges() {
     m_pRoutePoint->SetUseSca(m_checkBoxScaMin->GetValue());
     m_pRoutePoint->m_MarkDescription = m_textDescription->GetValue();
     m_pRoutePoint->SetVisible(m_checkBoxVisible->GetValue());
-    m_pRoutePoint->m_bShowName = m_checkBoxShowName->GetValue();
+    m_pRoutePoint->m_bShowName = m_checkBoxShowNameExt->GetValue();
     m_pRoutePoint->SetPosition(fromDMM(m_textLatitude->GetValue()),
                                fromDMM(m_textLongitude->GetValue()));
     wxString* icon_name =
@@ -1792,8 +1769,8 @@ SaveDefaultsDialog::SaveDefaultsDialog(MarkInfoDlg* parent)
   wxFlexGridSizer* fgSizer1 = new wxFlexGridSizer(2);
 
   wxString s =
-      (g_pMarkInfoDialog->m_checkBoxShowName->GetValue() ? _("Do use")
-                                                         : _("Don't use"));
+      (g_pMarkInfoDialog->m_checkBoxShowNameExt->GetValue() ? _("Do use")
+                                                            : _("Don't use"));
   NameCB =
       new wxCheckBox(this, wxID_ANY, _("Show Waypoint Name"), wxDefaultPosition,
                      wxDefaultSize, 0, wxDefaultValidator);
